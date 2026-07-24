@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(Start-Sleep -Seconds 6; try { $r = Invoke-WebRequest -Uri \"http://localhost:3001/\" -UseBasicParsing -TimeoutSec 20; \"STATUS $\\($r.StatusCode\\)\"; if \\($r.Content -match \"Bienvenue sur DAF 360\"\\) { \"OK: onboarding page rendu\" } else { \"WARN: contenu inattendu\" } } catch { \"ERREUR: $_\" })",
+      "PowerShell(npm run dev)"
+    ]
+  }
+}
