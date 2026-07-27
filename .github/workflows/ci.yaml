@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request: ~
+
+permissions:
+  contents: read
+
+jobs:
+  qualite:
+    name: Qualité & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Valider composer.json / composer.lock
+        run: composer validate --strict
+
+      - name: Cache des dépendances Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Installer les dépendances
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Contrôle du style (PHP-CS-Fixer)
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        env:
+          PHP_CS_FIXER_IGNORE_ENV: 1
+
+      - name: Analyse statique (PHPStan)
+        run: vendor/bin/phpstan analyse --no-progress
+
+      - name: Tests (PHPUnit)
+        run: vendor/bin/phpunit
+
+      - name: Audit de sécurité des dépendances
+        run: composer audit
