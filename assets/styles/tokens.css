@@ -140,7 +140,7 @@ button {
 
 .serif,
 .mkt-serif {
-  font-family: var(--font-serif-stack);
+  font-family: var(--font-sans-stack);
 }
 
 /* Réservé aux lecteurs d'écran (§10) : masqué visuellement, restitué à l'oral. */
