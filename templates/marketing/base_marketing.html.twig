@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ include('marketing/_header.html.twig') }}
+    <main class="mkt">
+        {% block marketing %}{% endblock %}
+    </main>
+    {{ include('marketing/_footer.html.twig') }}
+{% endblock %}

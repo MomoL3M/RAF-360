@@ -1,0 +1,144 @@
+/* ===================================================================
+   RAF360 — charte graphique : tokens, polices, reset.
+   Valeurs reprises À L'EXACT de la baseline gelée (inventaire R2 §A).
+   =================================================================== */
+
+/* Polices auto-hébergées (WOFF2) — aucune requête Google Fonts (§8.3 : perf + RGPD). */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/inter-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/inter-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/inter-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/inter-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/fraunces-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/fraunces-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/fraunces-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-700.woff2") format("woff2");
+}
+
+:root {
+  /* palette produit (app) — dérivée du logo RAF 360 */
+  --navy: #14306b;
+  --navy2: #1e2761;
+  --blue: #2c6fb0;
+  --ice: #cadcfc;
+  --iceb: #9cc2f0;
+  --gold: #eda323;
+  --green: #2fa37c;
+  --red: #c0503f;
+  --redl: #fce9e5;
+  --ink: #101b3a;
+  --slate: #5b6480;
+  --bg: #f4f7fc;
+  --card: #ffffff;
+  --line: #dce4f2;
+
+  /* échelle marine étendue (marketing) */
+  --navy-950: #071634;
+  --navy-900: #0b1e45;
+  --navy-800: #0e2a5e;
+  --navy-700: #14306b;
+  --navy-600: #1c3f86;
+  --blue-500: #2c6fb0;
+  --blue-400: #5b94d6;
+  --blue-300: #8fbbee;
+  --blue-100: #dbe8fb;
+
+  /* ambre (accent) */
+  --gold-600: #d98a10;
+  --gold-500: #eda323;
+  --gold-400: #f6b743;
+
+  /* neutres marketing */
+  --paper: #ffffff;
+  --paper-2: #f7f9fd;
+  --paper-3: #eef3fb;
+  --ink-soft: #33406a;
+  --muted: #64708f;
+  --hairline: #e4eaf5;
+
+  /* familles de polices (auto-hébergées ci-dessus) */
+  --font-serif: "Fraunces";
+  --font-sans: "Inter";
+  --font-serif-stack: var(--font-serif), Georgia, "Times New Roman", serif;
+  --font-sans-stack: var(--font-sans), "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --container: 1200px;
+  --shadow-sm: 0 1px 2px rgba(11, 30, 69, 0.05);
+  --shadow-md: 0 12px 30px -12px rgba(11, 30, 69, 0.18);
+  --shadow-lg: 0 40px 80px -30px rgba(11, 30, 69, 0.35);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans-stack);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.serif,
+.mkt-serif {
+  font-family: var(--font-serif-stack);
+}

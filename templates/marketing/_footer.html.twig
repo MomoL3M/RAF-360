@@ -1,0 +1,51 @@
+{% set cols = [
+    { titre: 'Produit', liens: [
+        { r: 'produit', l: 'Vue d\'ensemble' },
+        { r: 'produit', l: 'Copilote IA' },
+        { r: 'produit', l: 'Trésorerie' },
+        { r: 'app_accueil', l: 'Voir la démo' },
+    ] },
+    { titre: 'Solutions', liens: [
+        { r: 'solutions', l: 'TPE' },
+        { r: 'solutions', l: 'PME' },
+        { r: 'solutions', l: 'Experts-comptables' },
+        { r: 'tarifs', l: 'Tarifs' },
+    ] },
+    { titre: 'Entreprise', liens: [
+        { r: 'a_propos', l: 'À propos' },
+        { r: 'blog', l: 'Blog' },
+        { r: 'contact', l: 'Contact' },
+        { r: 'diagnostic', l: 'Démarrer le diagnostic' },
+    ] },
+] %}
+<footer class="mkt-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="on-dark" style="margin-bottom:18px;">
+                    {{ include('marketing/_logo.html.twig', { size: 34, dark: true }) }}
+                </div>
+                <p style="max-width:320px;font-size:14.5px;line-height:1.65;">
+                    Le copilote financier, comptable, fiscal, social et juridique des TPE et PME françaises.
+                    Nous éclairons vos décisions et orientons chaque sujet réglementé vers le bon professionnel habilité.
+                </p>
+            </div>
+            {% for col in cols %}
+                <div>
+                    <h4>{{ col.titre }}</h4>
+                    {% for lien in col.liens %}
+                        <a href="{{ path(lien.r) }}">{{ lien.l }}</a>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="footer-bottom">
+            <span>© {{ 'now'|date('Y') }} RAF360 — Édité par Lindbergh Formation SAS. France.</span>
+            <span style="display:flex;gap:20px;">
+                <a href="{{ path('mentions_legales') }}" style="padding:0;">Mentions légales</a>
+                <a href="{{ path('confidentialite') }}" style="padding:0;">Confidentialité</a>
+                <a href="{{ path('rgpd') }}" style="padding:0;">RGPD</a>
+            </span>
+        </div>
+    </div>
+</footer>

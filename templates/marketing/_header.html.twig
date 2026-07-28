@@ -1,0 +1,42 @@
+{% import 'marketing/_icons.html.twig' as icon %}
+{% set route = app.request.attributes.get('_route') %}
+{% set liens = [
+    { r: 'produit', l: 'Produit' },
+    { r: 'solutions', l: 'Solutions' },
+    { r: 'tarifs', l: 'Tarifs' },
+    { r: 'a_propos', l: 'À propos' },
+    { r: 'blog', l: 'Blog' },
+] %}
+<header class="mkt-header" data-controller="header">
+    <div class="container">
+        <a href="{{ path('accueil') }}" class="logo-lockup" aria-label="RAF360 — accueil">
+            {{ include('marketing/_logo.html.twig', { size: 34 }) }}
+        </a>
+
+        <nav class="mkt-nav" aria-label="Navigation principale">
+            {% for lien in liens %}
+                <a href="{{ path(lien.r) }}"{{ route == lien.r ? ' class="active"' : '' }}>{{ lien.l }}</a>
+            {% endfor %}
+        </nav>
+
+        <div class="header-cta">
+            <a href="{{ path('connexion') }}" class="m-btn m-btn-ghost m-btn-sm">Se connecter</a>
+            <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold m-btn-sm">Démarrer le diagnostic {{ icon.arrowRight(16) }}</a>
+            <button class="burger" type="button" data-header-target="burger" data-action="header#toggle"
+                    aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-mobile">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="mobile-menu" id="menu-mobile" data-header-target="menu">
+        {% for lien in liens %}
+            <a href="{{ path(lien.r) }}" data-action="header#close">{{ lien.l }}</a>
+        {% endfor %}
+        <a href="{{ path('contact') }}" data-action="header#close">Contact</a>
+        <div style="display:flex;gap:12px;margin-top:18px;">
+            <a href="{{ path('connexion') }}" class="m-btn m-btn-ghost" style="flex:1;">Se connecter</a>
+            <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold" style="flex:1;">Diagnostic</a>
+        </div>
+    </div>
+</header>
