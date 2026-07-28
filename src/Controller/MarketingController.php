@@ -24,7 +24,7 @@ final class MarketingController extends AbstractController
     #[Route('/produit', name: 'produit', methods: ['GET'])]
     public function produit(): Response
     {
-        return $this->enConstruction('Produit');
+        return $this->render('marketing/produit.html.twig');
     }
 
     #[Route('/solutions', name: 'solutions', methods: ['GET'])]
