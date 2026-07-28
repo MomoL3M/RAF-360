@@ -586,6 +586,83 @@
   color: var(--gold-400);
 }
 
+/* Grille tarifs à 4 offres (la baseline n'en présentait que 3 — contenu réel R1).
+   Sélecteur à double classe pour primer sur .price-grid en toutes circonstances. */
+.price-grid.price-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1080px) {
+  .price-grid.price-grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 620px) {
+  .price-grid.price-grid--4 {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+  }
+}
+.price-note {
+  text-align: center;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Tableau comparatif des offres */
+.compare-wrap {
+  overflow-x: auto;
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+.compare-table th,
+.compare-table td {
+  padding: 14px 16px;
+}
+.compare-table thead tr {
+  background: var(--paper-2);
+}
+.compare-table th.compare-feat {
+  text-align: left;
+  padding: 18px 22px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.compare-table th.compare-plan {
+  font-size: 14px;
+  color: var(--navy-900);
+  font-weight: 700;
+  font-family: var(--font-serif-stack);
+}
+.compare-table tbody tr {
+  border-top: 1px solid var(--hairline);
+}
+.compare-table td.compare-feat {
+  text-align: left;
+  padding: 14px 22px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.compare-table td.compare-cell {
+  text-align: center;
+}
+.compare-table td.compare-cell svg {
+  color: var(--green);
+}
+.compare-table .compare-empty {
+  color: var(--hairline);
+  font-size: 18px;
+}
+
 /* testimonial */
 .quote-card {
   background: #fff;

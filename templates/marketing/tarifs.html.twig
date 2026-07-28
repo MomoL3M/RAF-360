@@ -1,0 +1,181 @@
+{% extends 'marketing/base_marketing.html.twig' %}
+
+{% block title %}Tarifs — RAF360 : quatre offres sans engagement{% endblock %}
+{% block meta_description %}Les offres RAF360 pour piloter vos finances : Starter (39 €), Pilot TPE (129 €), RAF PME (349 €) et RAF ETI (899 €) par mois HT. Sans engagement, évolutives à tout moment.{% endblock %}
+
+{% block marketing %}
+    {% import 'marketing/_icons.html.twig' as icon %}
+
+    {# Offres : source de vérité alignée sur la grille R1 figée et l'aperçu de l'accueil.
+       TODO-PM : la répartition fine des fonctionnalités par offre reste à valider (le prix, lui, est figé). #}
+    {% set offres = [
+        { name: 'Starter', price: '39 €', period: '/ mois HT', tagline: 'Pour démarrer et y voir clair.', featured: false,
+          cta: 'Commencer', route: 'diagnostic',
+          feats: ['Tableau de bord & échéances', 'Coffre-fort documentaire (OCR)', 'Copilote IA — alertes', 'Adaptation à votre secteur', '1 entité · 1 utilisateur'] },
+        { name: 'Pilot TPE', price: '129 €', period: '/ mois HT', tagline: 'Le pilotage complet du dirigeant.', featured: true,
+          cta: 'Commencer', route: 'diagnostic',
+          feats: ['Tout Starter, plus :', 'Trésorerie prévisionnelle (13 semaines)', 'Scénarios & recommandations', 'Préparation à la facturation électronique', 'Data room', '3 utilisateurs'] },
+        { name: 'RAF PME', price: '349 €', period: '/ mois HT', tagline: 'Pour les PME et leurs équipes.', featured: false,
+          cta: 'Commencer', route: 'diagnostic',
+          feats: ['Tout Pilot TPE, plus :', 'Multi-utilisateurs & rôles', 'Accompagnement dédié', 'Support prioritaire'] },
+        { name: 'RAF ETI', price: '899 €', period: '/ mois HT', tagline: 'Pour les groupes multi-entités.', featured: false,
+          cta: 'Nous contacter', route: 'contact',
+          feats: ['Tout RAF PME, plus :', 'Multi-entités', 'API & intégrations', 'Interlocuteur dédié', 'SLA renforcé'] },
+    ] %}
+
+    {# ===================== HERO ===================== #}
+    <section class="page-hero">
+        <div class="container" style="text-align:center;">
+            <span class="eyebrow reveal" data-controller="reveal" style="margin-bottom:18px;justify-content:center;">Tarifs</span>
+            <h1 class="display reveal" data-controller="reveal" style="transition-delay:60ms;max-width:820px;margin:0 auto 22px;">Un tarif clair, sans surprise.</h1>
+            {# Réponse directe autoportante (GEO §9.4) : marque + faits chiffrés. #}
+            <p class="lead reveal" data-controller="reveal" style="transition-delay:120ms;max-width:600px;margin:0 auto;">
+                RAF360 propose quatre offres d'abonnement mensuel HT — de 39 € pour les indépendants à 899 € pour les ETI —
+                sans engagement et évolutives à tout moment.
+            </p>
+        </div>
+    </section>
+
+    {# ===================== CARTES ===================== #}
+    <section class="section" style="padding-top:24px;">
+        <div class="container">
+            <div class="price-grid price-grid--4">
+                {% for p in offres %}
+                    <div class="reveal" data-controller="reveal" style="transition-delay:{{ loop.index0 * 80 }}ms;display:flex;">
+                        <div class="price-card {{ p.featured ? 'featured' : '' }}" style="flex:1;">
+                            {% if p.featured %}
+                                <span class="pill" style="align-self:flex-start;margin-bottom:14px;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;"><span class="pill-dot"></span> Le plus choisi</span>
+                            {% endif %}
+                            <div style="font-size:14px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;opacity:0.85;">{{ p.name }}</div>
+                            <div style="margin:10px 0 4px;display:flex;align-items:baseline;gap:4px;">
+                                <span class="price-amount">{{ p.price }}</span>
+                                <span style="font-size:15px;opacity:0.65;">{{ p.period }}</span>
+                            </div>
+                            <p style="font-size:14px;opacity:0.8;margin-bottom:18px;">{{ p.tagline }}</p>
+                            <div style="flex:1;">
+                                {% for feat in p.feats %}
+                                    <div class="price-feat">{{ icon.check(18) }} <span>{{ feat }}</span></div>
+                                {% endfor %}
+                            </div>
+                            <a href="{{ path(p.route) }}" class="m-btn {{ p.featured ? 'm-btn-gold' : 'm-btn-ghost' }}" style="margin-top:22px;width:100%;">{{ p.cta }}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <p class="price-note reveal" data-controller="reveal" style="transition-delay:220ms;">
+                Tarifs hors taxes, sans engagement. Le périmètre exact de chaque offre est confirmé à la souscription.
+            </p>
+        </div>
+    </section>
+
+    {# ===================== COMPARATIF ===================== #}
+    {% set plans = ['Starter', 'Pilot TPE', 'RAF PME', 'RAF ETI'] %}
+    {% set compare = [
+        { feat: 'Tableau de bord & centre d\'actions', on: [true, true, true, true] },
+        { feat: 'Calendrier des échéances',            on: [true, true, true, true] },
+        { feat: 'Coffre-fort documentaire (OCR)',      on: [true, true, true, true] },
+        { feat: 'Copilote IA — alertes',               on: [true, true, true, true] },
+        { feat: 'Adaptation à votre secteur',          on: [true, true, true, true] },
+        { feat: 'Trésorerie prévisionnelle',           on: [false, true, true, true] },
+        { feat: 'Scénarios & recommandations',         on: [false, true, true, true] },
+        { feat: 'Préparation à la facturation électronique', on: [false, true, true, true] },
+        { feat: 'Data room (partage tracé, révocable)', on: [false, true, true, true] },
+        { feat: 'Multi-utilisateurs & rôles',          on: [false, false, true, true] },
+        { feat: 'Accompagnement dédié',                on: [false, false, true, true] },
+        { feat: 'Support prioritaire',                 on: [false, false, true, true] },
+        { feat: 'Multi-entités',                       on: [false, false, false, true] },
+        { feat: 'API & intégrations',                  on: [false, false, false, true] },
+        { feat: 'SLA renforcé',                        on: [false, false, false, true] },
+    ] %}
+    <section class="section band-soft">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:40px;">
+                <h2 class="h2 reveal" data-controller="reveal">Comparez les offres.</h2>
+            </div>
+            <div class="reveal surface" data-controller="reveal" style="padding:0;overflow:hidden;">
+                <div class="compare-wrap">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th class="compare-feat" scope="col">Fonctionnalité</th>
+                                {% for plan in plans %}
+                                    <th class="compare-plan" scope="col">{{ plan }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in compare %}
+                                <tr>
+                                    <td class="compare-feat">{{ row.feat }}</td>
+                                    {% for ok in row.on %}
+                                        <td class="compare-cell">
+                                            {% if ok %}
+                                                {{ icon.check(19) }}<span class="visually-hidden">Inclus</span>
+                                            {% else %}
+                                                <span class="compare-empty" aria-hidden="true">—</span><span class="visually-hidden">Non inclus</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ===================== FAQ ===================== #}
+    {% set faq = [
+        { q: 'Y a-t-il un engagement ?',
+          a: 'Non. Tous les abonnements RAF360 sont sans engagement et résiliables à tout moment. Vous pouvez aussi changer d\'offre quand vous le souhaitez.' },
+        { q: 'RAF360 remplace-t-il mon expert-comptable ?',
+          a: 'Non, et c\'est un principe fondateur. RAF360 prépare, contrôle et éclaire vos décisions, mais les actes réglementés restent confiés aux professionnels habilités. Aucune commission n\'est prélevée sur leurs honoraires.' },
+        { q: 'Mes données sont-elles en sécurité ?',
+          a: 'Vos données sont hébergées dans l\'Union européenne, chiffrées, et chaque accès est journalisé. Vous gardez la maîtrise de vos partages : limités dans le temps, filigranés et révocables.' },
+        { q: 'Puis-je essayer avant de payer ?',
+          a: 'Oui. Le diagnostic gratuit vous donne un premier aperçu de préparation dès la saisie de votre SIREN, avant toute création de compte. L\'abonnement n\'intervient qu\'une fois la valeur démontrée.' },
+    ] %}
+    <section class="section">
+        <div class="container container-narrow">
+            <div style="text-align:center;margin-bottom:40px;">
+                <div class="eyebrow reveal" data-controller="reveal" style="margin-bottom:16px;justify-content:center;">Questions fréquentes</div>
+                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;">Tout ce qu'il faut savoir.</h2>
+            </div>
+            <div style="display:grid;gap:14px;">
+                {% for item in faq %}
+                    <div class="reveal surface" data-controller="reveal" style="transition-delay:{{ loop.index0 * 60 }}ms;">
+                        <h3 class="h3" style="margin-bottom:10px;font-size:1.2rem;">{{ item.q }}</h3>
+                        <p style="color:var(--muted);font-size:15.5px;line-height:1.6;">{{ item.a }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    {# ===================== CTA FINAL ===================== #}
+    <section class="section band-dark on-dark" style="text-align:center;">
+        <div class="container container-narrow">
+            <h2 class="h2 reveal" data-controller="reveal" style="margin-bottom:20px;">Prêt à piloter sereinement ?</h2>
+            <p class="lead reveal" data-controller="reveal" style="transition-delay:80ms;margin:0 auto 32px;max-width:560px;">
+                Le diagnostic gratuit vous montre votre niveau de préparation en quelques minutes, sans création de compte.
+            </p>
+            <div class="reveal" data-controller="reveal" style="transition-delay:140ms;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+                <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
+                <a href="{{ path('contact') }}" class="m-btn m-btn-ghost on-dark">Parler à un conseiller</a>
+            </div>
+        </div>
+    </section>
+
+    {# Données structurées FAQPage (GEO §9.4). |raw sur une sortie json_encode : JSON valide,
+       slashes échappées par PHP → aucun risque d'injection ni de rupture de </script>. #}
+    <script type="application/ld+json">{{ {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': faq|map(qa => {
+            '@type': 'Question',
+            'name': qa.q,
+            'acceptedAnswer': { '@type': 'Answer', 'text': qa.a }
+        })
+    }|json_encode|raw }}</script>
+{% endblock %}

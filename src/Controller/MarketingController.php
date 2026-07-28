@@ -36,7 +36,7 @@ final class MarketingController extends AbstractController
     #[Route('/tarifs', name: 'tarifs', methods: ['GET'])]
     public function tarifs(): Response
     {
-        return $this->enConstruction('Tarifs');
+        return $this->render('marketing/tarifs.html.twig');
     }
 
     #[Route('/a-propos', name: 'a_propos', methods: ['GET'])]
