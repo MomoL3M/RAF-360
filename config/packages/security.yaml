@@ -1,7 +1,9 @@
 security:
-    # Hachage des mots de passe : « auto » retient Argon2id lorsque sodium est disponible (§16.1).
+    # Hachage des mots de passe en Argon2id via libsodium (§16.1).
+    # NB : « auto » retiendrait bcrypt ; on force donc explicitement Argon2id.
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: sodium
 
     # Fournisseur d'utilisateurs : entité Doctrine, identifiant = e-mail.
     providers:
