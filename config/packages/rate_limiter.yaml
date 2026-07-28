@@ -1,0 +1,7 @@
+framework:
+    rate_limiter:
+        # Anti-abus des formulaires publics (contact, diagnostic) — §13.1 / §16.
+        lead_form:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '15 minutes'

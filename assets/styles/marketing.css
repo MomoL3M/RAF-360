@@ -828,6 +828,52 @@
   color: var(--ink-soft);
   margin-bottom: 7px;
 }
+.form-field[aria-invalid="true"] {
+  border-color: var(--red);
+}
+.form-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 6px;
+}
+.form-row {
+  margin-bottom: 18px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.form-alert {
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  font-size: 14.5px;
+  border: 1px solid var(--hairline);
+}
+.form-alert-ok {
+  background: #e9f6f0;
+  border-color: #bfe6d3;
+  color: #1c6b47;
+}
+.form-alert-err {
+  background: var(--redl);
+  border-color: var(--red);
+  color: var(--red);
+}
+/* Champ piège anti-spam : masqué à l'écran ET aux lecteurs d'écran. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
 
 /* ===================== SCROLL REVEAL ===================== */
 /* État masqué appliqué UNIQUEMENT si JS est présent (classe .js posée dans <head>).

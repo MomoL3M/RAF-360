@@ -1,0 +1,47 @@
+{% extends 'marketing/base_marketing.html.twig' %}
+
+{% block title %}Données & RGPD — RAF360{% endblock %}
+{% block meta_description %}Vos données personnelles et vos droits chez RAF360 : minimisation, hébergement UE, gestion des cookies et exercice de vos droits RGPD.{% endblock %}
+
+{% block marketing %}
+    {{ include('marketing/_legal.html.twig') }}
+    <section class="page-hero">
+        <div class="container container-narrow">
+            <div class="eyebrow" style="margin-bottom:16px;">Confiance</div>
+            <h1 class="display" style="font-size:clamp(2rem,4vw,3rem);">Données &amp; RGPD</h1>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:8px;">
+        <div class="container container-narrow legal-prose">
+            <p>
+                Chez RAF360, la protection de vos données est intégrée dès la conception. Nous appliquons le principe de
+                minimisation : nous ne collectons que ce qui est nécessaire à chaque finalité annoncée.
+            </p>
+
+            <h2>Nos engagements</h2>
+            <ul>
+                <li>Hébergement des données dans l'Union européenne.</li>
+                <li>Sources d'analyse officielles françaises, jamais de contenu inventé.</li>
+                <li>Chiffrement et journalisation des accès.</li>
+                <li>Partages de documents limités dans le temps, révocables et tracés.</li>
+            </ul>
+
+            <h2>Gestion des cookies</h2>
+            <p>
+                Aucun traceur non essentiel n'est déposé sans votre consentement explicite. Le refus est aussi simple que
+                l'acceptation, et votre choix reste modifiable à tout moment. <em>(Bandeau de consentement en cours de
+                déploiement.)</em>
+            </p>
+
+            <h2>Exercer vos droits</h2>
+            <p>
+                Accès, rectification, effacement, opposition, limitation, portabilité : adressez votre demande via notre
+                <a href="{{ path('contact') }}">page de contact</a>. Le détail des traitements figure dans la
+                <a href="{{ path('confidentialite') }}">politique de confidentialité</a>.
+            </p>
+
+            <p class="legal-updated">Dernière mise à jour : juillet 2026.</p>
+        </div>
+    </section>
+{% endblock %}

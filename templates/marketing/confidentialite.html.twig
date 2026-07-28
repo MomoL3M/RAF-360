@@ -1,0 +1,70 @@
+{% extends 'marketing/base_marketing.html.twig' %}
+
+{% block title %}Politique de confidentialité — RAF360{% endblock %}
+{% block meta_description %}Comment RAF360 (Lindbergh Formation SAS) collecte, utilise et protège vos données personnelles, et comment exercer vos droits (RGPD).{% endblock %}
+
+{% block marketing %}
+    {{ include('marketing/_legal.html.twig') }}
+    <section class="page-hero">
+        <div class="container container-narrow">
+            <div class="eyebrow" style="margin-bottom:16px;">Vos données</div>
+            <h1 class="display" style="font-size:clamp(2rem,4vw,3rem);">Politique de confidentialité</h1>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:8px;">
+        <div class="container container-narrow legal-prose">
+            <div class="legal-todo">
+                ⚠️ Projet de politique à valider par l'éditeur avant mise en ligne (durées de conservation exactes,
+                hébergeur, sous-traitants et adresse de contact des demandes RGPD).
+            </div>
+
+            <p>
+                La présente politique décrit la façon dont <strong>Lindbergh Formation SAS</strong>, responsable de
+                traitement, collecte et traite vos données personnelles lorsque vous utilisez le site RAF360.
+            </p>
+
+            <h2>Données que nous collectons</h2>
+            <ul>
+                <li>Formulaire de contact : nom, adresse email, société, téléphone, message.</li>
+                <li>Diagnostic gratuit : SIREN, adresse email, site internet et type d'activité.</li>
+                <li>Données techniques de navigation strictement nécessaires au fonctionnement du site.</li>
+            </ul>
+
+            <h2>Finalités et bases légales</h2>
+            <ul>
+                <li>Répondre à vos demandes de contact — <em>intérêt légitime</em> / mesures précontractuelles.</li>
+                <li>Préparer et vous transmettre votre diagnostic — <em>consentement</em> et mesures précontractuelles.</li>
+                <li>Assurer la sécurité et le bon fonctionnement du site — <em>intérêt légitime</em>.</li>
+            </ul>
+
+            <h2>Durées de conservation</h2>
+            <p>
+                Les données des prospects sont conservées le temps nécessaire au traitement de la demande, puis archivées
+                ou supprimées selon les durées légales applicables. <em>(Durées précises à confirmer par l'éditeur.)</em>
+            </p>
+
+            <h2>Destinataires et sous-traitants</h2>
+            <p>
+                Vos données sont traitées par l'éditeur et ses sous-traitants techniques (hébergement situé dans l'Union
+                européenne, service d'envoi d'emails). La liste précise sera publiée avant la mise en ligne.
+            </p>
+
+            <h2>Vos droits</h2>
+            <p>
+                Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, d'opposition, de
+                limitation et de portabilité de vos données. Vous pouvez les exercer via notre
+                <a href="{{ path('contact') }}">page de contact</a>. Vous pouvez également introduire une réclamation
+                auprès de la CNIL (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).
+            </p>
+
+            <h2>Cookies</h2>
+            <p>
+                Le site privilégie une mesure d'audience respectueuse de la vie privée. Aucun traceur non essentiel n'est
+                déposé sans votre consentement. Voir la page <a href="{{ path('rgpd') }}">données &amp; RGPD</a>.
+            </p>
+
+            <p class="legal-updated">Dernière mise à jour : juillet 2026.</p>
+        </div>
+    </section>
+{% endblock %}

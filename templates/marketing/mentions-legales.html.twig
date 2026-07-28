@@ -1,0 +1,61 @@
+{% extends 'marketing/base_marketing.html.twig' %}
+
+{% block title %}Mentions légales — RAF360{% endblock %}
+{% block meta_description %}Mentions légales du site RAF360, édité par Lindbergh Formation SAS (Montlhéry, France).{% endblock %}
+
+{% block marketing %}
+    {{ include('marketing/_legal.html.twig') }}
+    <section class="page-hero">
+        <div class="container container-narrow">
+            <div class="eyebrow" style="margin-bottom:16px;">Informations légales</div>
+            <h1 class="display" style="font-size:clamp(2rem,4vw,3rem);">Mentions légales</h1>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:8px;">
+        <div class="container container-narrow legal-prose">
+            <div class="legal-todo">
+                ⚠️ Document en cours de finalisation par l'éditeur. Éléments restant à confirmer avant mise en ligne :
+                directeur de la publication, hébergeur et adresse email de contact.
+            </div>
+
+            <h2>Éditeur du site</h2>
+            <p>
+                Le site RAF360 est édité par&nbsp;:<br>
+                <strong>Lindbergh Formation</strong> — Société par actions simplifiée (SAS)<br>
+                Siège social : 16 rue de Maillé, 91310 Montlhéry, France<br>
+                SIRET : 817&nbsp;946&nbsp;114&nbsp;00029<br>
+                Téléphone : <a href="tel:+33187662097">+33 1 87 66 20 97</a><br>
+                Email : <em>(à venir)</em>
+            </p>
+
+            <h2>Directeur de la publication</h2>
+            <p><em>Nom du représentant légal à préciser par l'éditeur.</em></p>
+
+            <h2>Hébergeur</h2>
+            <p><em>Hébergeur situé dans l'Union européenne — coordonnées à préciser avant la mise en ligne.</em></p>
+
+            <h2>Propriété intellectuelle</h2>
+            <p>
+                L'ensemble des contenus présents sur ce site (textes, éléments graphiques, logo, interface) est protégé
+                par le droit de la propriété intellectuelle et demeure la propriété de l'éditeur, sauf mention contraire.
+                Toute reproduction ou représentation, totale ou partielle, sans autorisation écrite préalable est interdite.
+            </p>
+
+            <h2>Données personnelles</h2>
+            <p>
+                Le traitement de vos données personnelles est décrit dans notre
+                <a href="{{ path('confidentialite') }}">politique de confidentialité</a>. Vous disposez de droits que vous
+                pouvez exercer via notre <a href="{{ path('contact') }}">page de contact</a>.
+            </p>
+
+            <h2>Cookies</h2>
+            <p>
+                La gestion des cookies et traceurs est détaillée sur la page
+                <a href="{{ path('rgpd') }}">données &amp; RGPD</a>.
+            </p>
+
+            <p class="legal-updated">Dernière mise à jour : juillet 2026.</p>
+        </div>
+    </section>
+{% endblock %}

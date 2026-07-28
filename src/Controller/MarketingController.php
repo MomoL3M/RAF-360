@@ -9,9 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Pages publiques marketing. L'accueil est construit (iso-graphisme baseline) ;
- * les autres routes rendent une page « en construction » afin qu'aucun lien du
- * site (nav, footer, CTA) ne soit mort avant les lots suivants.
+ * Pages publiques marketing (rendu côté serveur, iso-graphisme baseline).
+ * Les formulaires (contact, diagnostic) vivent dans LeadController.
  */
 final class MarketingController extends AbstractController
 {
@@ -30,7 +29,7 @@ final class MarketingController extends AbstractController
     #[Route('/solutions', name: 'solutions', methods: ['GET'])]
     public function solutions(): Response
     {
-        return $this->enConstruction('Solutions');
+        return $this->render('marketing/solutions.html.twig');
     }
 
     #[Route('/tarifs', name: 'tarifs', methods: ['GET'])]
@@ -42,47 +41,30 @@ final class MarketingController extends AbstractController
     #[Route('/a-propos', name: 'a_propos', methods: ['GET'])]
     public function aPropos(): Response
     {
-        return $this->enConstruction('À propos');
+        return $this->render('marketing/a-propos.html.twig');
     }
 
     #[Route('/blog', name: 'blog', methods: ['GET'])]
     public function blog(): Response
     {
-        return $this->enConstruction('Blog');
-    }
-
-    #[Route('/contact', name: 'contact', methods: ['GET'])]
-    public function contact(): Response
-    {
-        return $this->enConstruction('Contact');
-    }
-
-    #[Route('/diagnostic', name: 'diagnostic', methods: ['GET'])]
-    public function diagnostic(): Response
-    {
-        return $this->enConstruction('Diagnostic gratuit');
+        return $this->render('marketing/blog.html.twig');
     }
 
     #[Route('/mentions-legales', name: 'mentions_legales', methods: ['GET'])]
     public function mentionsLegales(): Response
     {
-        return $this->enConstruction('Mentions légales');
+        return $this->render('marketing/mentions-legales.html.twig');
     }
 
     #[Route('/politique-de-confidentialite', name: 'confidentialite', methods: ['GET'])]
     public function confidentialite(): Response
     {
-        return $this->enConstruction('Politique de confidentialité');
+        return $this->render('marketing/confidentialite.html.twig');
     }
 
     #[Route('/rgpd', name: 'rgpd', methods: ['GET'])]
     public function rgpd(): Response
     {
-        return $this->enConstruction('RGPD');
-    }
-
-    private function enConstruction(string $titre): Response
-    {
-        return $this->render('marketing/en-construction.html.twig', ['titre' => $titre]);
+        return $this->render('marketing/rgpd.html.twig');
     }
 }
