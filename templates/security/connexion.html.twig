@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — RAF360{% endblock %}
+
+{% block body %}
+    <main>
+        <h1>Connexion à votre espace RAF360</h1>
+
+        {% if derniere_erreur %}
+            <p role="alert">{{ derniere_erreur.messageKey|trans(derniere_erreur.messageData, 'security') }}</p>
+        {% endif %}
+
+        <form method="post" action="{{ path('connexion') }}">
+            <label for="inputEmail">Adresse e-mail</label>
+            <input type="email" id="inputEmail" name="_username" value="{{ dernier_email }}"
+                   autocomplete="email" required autofocus>
+
+            <label for="inputPassword">Mot de passe</label>
+            <input type="password" id="inputPassword" name="_password"
+                   autocomplete="current-password" required>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button type="submit">Se connecter</button>
+        </form>
+    </main>
+{% endblock %}

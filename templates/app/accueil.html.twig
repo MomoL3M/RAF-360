@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace RAF360{% endblock %}
+
+{% block body %}
+    <main>
+        <h1>Espace connecté</h1>
+        <p>Bonjour {{ app.user.prenom }} — votre espace applicatif sera construit lors d'un prochain lot
+           (reproduction fidèle de la baseline gelée).</p>
+        <p><a href="{{ path('deconnexion') }}">Se déconnecter</a></p>
+    </main>
+{% endblock %}

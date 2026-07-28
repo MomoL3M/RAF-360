@@ -1,37 +1,49 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # Hachage des mots de passe : « auto » retient Argon2id lorsque sodium est disponible (§16.1).
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    # Fournisseur d'utilisateurs : entité Doctrine, identifiant = e-mail.
     providers:
-        users_in_memory: { memory: null }
+        app_utilisateurs:
+            entity:
+                class: App\Entity\Utilisateur
+                property: email
 
     firewalls:
         dev:
-            # Ensure dev tools and static assets are always allowed
-            pattern: ^/(_profiler|_wdt|assets|build)/
+            pattern: ^/(_(profiler|wdt)|assets|build)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_utilisateurs
+            form_login:
+                login_path: connexion
+                check_path: connexion
+                enable_csrf: true
+                default_target_path: app_accueil
+            logout:
+                path: deconnexion
+                target: connexion
+            # Limitation des tentatives de connexion (anti credential-stuffing, §16.1).
+            login_throttling:
+                max_attempts: 5
 
-            # Activate different ways to authenticate:
-            # https://symfony.com/doc/current/security.html#the-firewall
+    role_hierarchy:
+        ROLE_COLLABORATEUR: [ROLE_USER]
+        ROLE_DIRIGEANT: [ROLE_COLLABORATEUR]
+        ROLE_EXPERT_COMPTABLE: [ROLE_USER]
+        ROLE_AVOCAT: [ROLE_USER]
+        ROLE_ADMIN: [ROLE_DIRIGEANT, ROLE_EXPERT_COMPTABLE, ROLE_AVOCAT]
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Note: Only the *first* matching rule is applied
+    # Seule la première règle correspondante s'applique.
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/app, roles: ROLE_USER }
 
 when@test:
     security:
         password_hashers:
-            # Password hashers are resource-intensive by design to ensure security.
-            # In tests, it's safe to reduce their cost to improve performance.
+            # Coûts réduits en test pour accélérer (jamais en production).
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
                 cost: 4 # Lowest possible value for bcrypt
