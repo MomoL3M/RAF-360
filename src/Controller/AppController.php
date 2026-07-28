@@ -21,6 +21,12 @@ final class AppController extends AbstractController
     #[Route('', name: 'app_accueil', methods: ['GET'])]
     public function accueil(): Response
     {
-        return $this->render('app/accueil.html.twig');
+        return $this->redirectToRoute('app_dashboard');
+    }
+
+    #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
+    public function dashboard(): Response
+    {
+        return $this->render('app/dashboard.html.twig');
     }
 }

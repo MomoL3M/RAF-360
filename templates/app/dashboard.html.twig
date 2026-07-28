@@ -1,0 +1,423 @@
+{# Tableau de bord /app — porté de la maquette premium. Document autonome
+   (isolé du CSS marketing pour éviter tout conflit de tokens). Données de démonstration. #}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — RAF360</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+/* ============ POLICES ============ */
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-400.woff2') }}') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('{{ asset('fonts/fraunces-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('{{ asset('fonts/fraunces-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Fraunces';src:url('{{ asset('fonts/fraunces-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+
+/* ============ TOKENS ============ */
+:root{
+  --paper:#eef1f7; --surface:#ffffff; --surface-2:#f7f9fc;
+  --navy-950:#081633; --navy-900:#0d1f4c; --navy-800:#14306b; --navy-700:#1d4487;
+  --gold:#c9a227; --gold-400:#e0b53d; --gold-050:#fbf4dd;
+  --green:#1f9d6b; --green-050:#e7f6ef;
+  --red:#d64545; --red-050:#fceaea;
+  --blue:#2c6fb0; --blue-050:#e9f1fa; --blue-300:#8fbbee;
+  --ink:#0f1c34; --ink-soft:#33415c; --slate:#64748b; --hairline:#e5e9f2;
+  --sans:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+  --serif:'Fraunces',Georgia,serif;
+  --sh-sm:0 1px 2px rgba(13,31,76,.06),0 1px 3px rgba(13,31,76,.05);
+  --sh-md:0 6px 16px rgba(13,31,76,.08),0 2px 6px rgba(13,31,76,.05);
+  --sh-lg:0 24px 60px rgba(13,31,76,.16);
+  --r:18px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);color:var(--ink);background:
+  radial-gradient(1200px 600px at 100% -5%,rgba(143,187,238,.18),transparent 55%),
+  radial-gradient(900px 500px at -10% 0%,rgba(224,181,61,.10),transparent 50%),
+  var(--paper);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;min-height:100vh}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.serif{font-family:var(--serif)}
+
+/* ============ SHELL ============ */
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--navy-900),var(--navy-950));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--gold-400),var(--gold));display:grid;place-items:center;color:var(--navy-950);font-family:var(--serif);font-weight:700;font-size:18px;box-shadow:0 4px 14px rgba(201,162,39,.4)}
+.brand b{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand b i{color:var(--gold-400);font-style:normal}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;color:#c7d3ea;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s,color .2s,transform .2s}
+.nav a svg{width:18px;height:18px;flex-shrink:0;opacity:.9}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.nav a.on{background:linear-gradient(90deg,rgba(224,181,61,.18),rgba(224,181,61,.02));color:#fff;box-shadow:inset 2px 0 0 var(--gold-400)}
+.side .spacer{flex:1}
+.side .who{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.side .who .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--blue-300),var(--navy-700));display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff}
+.side .who small{display:block;color:#9fb1d4;font-size:11px}
+.side .who span{font-size:13px;font-weight:600}
+
+.main{padding:26px 30px 60px;min-width:0}
+.topline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.topline h1{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;color:var(--navy-900)}
+.topline p{color:var(--slate);font-size:14px;margin-top:4px}
+.demo-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-050);color:#8a6d12;border:1px solid #ecd9a0;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--hairline);border-radius:12px;padding:4px;box-shadow:var(--sh-sm)}
+.seg button{border:0;background:transparent;font:600 13px/1 var(--sans);color:var(--slate);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.2s}
+.seg button.on{background:var(--navy-900);color:#fff;box-shadow:var(--sh-sm)}
+
+/* ============ CARDS ============ */
+.card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);box-shadow:var(--sh-sm);padding:20px;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.card:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-h .lbl{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+.card-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.card-ic svg{width:18px;height:18px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.kpi .val{font-family:var(--sans);font-weight:800;font-size:31px;letter-spacing:-.03em;color:var(--navy-900);line-height:1.05;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.kpi .val small{font-size:16px;color:var(--slate)}
+.kpi .foot{display:flex;align-items:center;gap:6px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.chip svg{width:12px;height:12px}
+.chip-amber{background:var(--gold-050);color:#8a6d12}
+.chip-green{background:var(--green-050);color:var(--green)}
+.chip-red{background:var(--red-050);color:var(--red)}
+.chip-blue{background:var(--blue-050);color:var(--blue)}
+.spark{margin-top:12px;width:100%;height:40px;display:block}
+
+/* ============ AI ALERT ============ */
+.alert{position:relative;overflow:hidden;border-radius:22px;color:#eaf0fb;
+  background:radial-gradient(700px 300px at 88% -20%,rgba(224,181,61,.22),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950));
+  box-shadow:var(--sh-lg);padding:24px 26px;margin-bottom:16px}
+.alert:before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 10% 120%,rgba(44,111,176,.35),transparent 60%);pointer-events:none}
+.alert .row{position:relative;display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+.alert .lead{flex:1;min-width:280px}
+.a-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#ffd98a}
+.a-tag .pulse{width:9px;height:9px;border-radius:50%;background:var(--gold-400);box-shadow:0 0 0 0 rgba(224,181,61,.7);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(224,181,61,.6)}70%{box-shadow:0 0 0 12px rgba(224,181,61,0)}100%{box-shadow:0 0 0 0 rgba(224,181,61,0)}}
+.alert h2{font-family:var(--sans);font-weight:800;font-size:23px;margin:12px 0 8px;color:#fff;letter-spacing:-.02em}
+.alert p{font-size:14.5px;line-height:1.6;color:#cbd7ee;max-width:60ch}
+.alert p b{color:#fff}
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.scen .s{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 15px;backdrop-filter:blur(6px)}
+.scen .s h4{font-size:13.5px;color:#fff;margin-bottom:8px;font-weight:700}
+.scen .s .li{display:flex;gap:7px;font-size:12.5px;line-height:1.45;color:#c3d0e8;padding:2px 0}
+.scen .s .li.pro span:first-child{color:var(--green)}
+.scen .s .li.con span:first-child{color:#ff8f8f}
+.reco{margin-top:16px;background:rgba(224,181,61,.12);border:1px solid rgba(224,181,61,.3);border-radius:12px;padding:12px 15px;font-size:13.5px;color:#fff2d4}
+.reco b{color:var(--gold-400)}
+.aside{width:212px;flex-shrink:0}
+.gaugebox{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;text-align:center}
+.conf-lbl{font-size:11.5px;color:#9fb1d4;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:6px}
+.a-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:0;border-radius:11px;font:700 13.5px/1 var(--sans);padding:11px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .2s,box-shadow .2s,background .2s}
+.btn svg{width:16px;height:16px}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold));color:var(--navy-950);box-shadow:0 8px 20px rgba(201,162,39,.35)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(201,162,39,.45)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.btn-ghost:hover{background:rgba(255,255,255,.15)}
+.src{position:relative;margin-top:14px;font-size:11.5px;color:#8ea1c6}
+
+/* ============ GRID BAS ============ */
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:1.2fr .9fr .9fr;gap:16px}
+.chart-legend{display:flex;gap:16px;font-size:12px;color:var(--slate);font-weight:600}
+.chart-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.lo-marker{fill:#fff;stroke:var(--red);stroke-width:2.5}
+
+.gauge-wrap{display:flex;align-items:center;gap:18px}
+.gauge{position:relative;width:132px;height:132px;flex-shrink:0}
+.gauge .pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.gauge .pct b{font-family:var(--sans);font-weight:800;font-size:29px;color:var(--navy-900);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.gauge .pct small{display:block;font-size:11px;color:var(--slate);font-weight:600}
+
+.row-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--hairline)}
+.row-item:last-child{border-bottom:0}
+.row-item .t{font-size:13.5px;color:var(--ink);font-weight:500}
+.row-item .t small{color:var(--slate);font-weight:600}
+.row-item .amount{font-weight:700}
+.date-pill{font-size:12px;font-weight:700;padding:4px 9px;border-radius:8px;background:var(--surface-2);color:var(--ink-soft);white-space:nowrap}
+.date-pill.warn{background:var(--gold-050);color:#8a6d12}
+.date-pill.due{background:var(--red-050);color:var(--red)}
+
+.act{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--hairline)}
+.act:last-child{border-bottom:0}
+.act .stripe{width:4px;align-self:stretch;border-radius:3px;flex-shrink:0}
+.act .t{font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.4}
+.act .m{font-size:12px;color:var(--slate);margin-top:2px}
+
+.veille{display:flex;flex-direction:column;gap:10px}
+.vcard{border-left:3px solid var(--c);background:var(--surface-2);border-radius:0 12px 12px 0;padding:11px 14px}
+.vcard .vt{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--c)}
+.vcard .vb{font-size:13px;color:var(--ink-soft);line-height:1.45;margin-top:5px}
+
+/* ============ REVEAL ============ */
+.rise{opacity:0;transform:translateY(20px)}
+.rise.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+
+.demo-badge{position:fixed;right:14px;bottom:14px;z-index:99;background:var(--navy-900);color:#fff;font:600 12px/1.4 var(--sans);padding:9px 13px;border-radius:10px;box-shadow:var(--sh-md);opacity:.92}
+
+@media(max-width:1080px){.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;gap:4px}.side .spacer,.side .who{display:none}.nav{flex-direction:row;flex-wrap:wrap}.main{padding:20px 16px 50px}.kpis{grid-template-columns:1fr 1fr}.scen{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="side">
+    <div class="brand"><span class="logo">R</span><b>RAF<i>360</i></b></div>
+    <nav class="nav">
+      <a href="#" class="on">◆ Tableau de bord</a>
+      <a href="#">Trésorerie</a>
+      <a href="#">Échéances</a>
+      <a href="#">Documents</a>
+      <a href="#">Factures</a>
+      <a href="#">Data room</a>
+      <a href="#">Actions</a>
+      <a href="#">Copilote IA</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <div class="topline">
+      <div>
+        <h1>Tableau de bord</h1>
+        <p>Vue d'ensemble — le copilote surveille, anticipe et propose.</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span class="demo-pill">● Données de démonstration</span>
+        <div class="seg"><button class="on">Ce mois</button><button>Trimestre</button><button>Année</button></div>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpis">
+      <div class="card kpi rise">
+        <div class="card-h"><span class="lbl">Trésorerie dispo.</span><span class="card-ic" style="background:var(--blue-050);color:var(--blue)">$IC_WALLET$</span></div>
+        <div class="val tnum"><span data-count="131200" data-suffix=" €">0 €</span></div>
+        <svg class="spark" viewBox="0 0 220 40" preserveAspectRatio="none" data-spark="8,26 34,22 60,25 86,18 112,20 138,14 164,16 190,9 216,11"></svg>
+        <div class="foot"><span class="chip chip-amber">$IC_DOWN$ Point bas anticipé · S6</span></div>
+      </div>
+      <div class="card kpi rise">
+        <div class="card-h"><span class="lbl">Encaissement attendu</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_IN$</span></div>
+        <div class="val tnum"><span data-count="12000" data-suffix=" €">0 €</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">Client <b style="color:var(--ink)">ACME</b> · échéance 20 fév.</div>
+        <div class="foot"><span class="chip chip-blue">$IC_CLOCK$ Sous 5 jours</span></div>
+      </div>
+      <div class="card kpi rise">
+        <div class="card-h"><span class="lbl">Échéances · 30 j</span><span class="card-ic" style="background:var(--gold-050);color:#8a6d12">$IC_CAL$</span></div>
+        <div class="val tnum"><span data-count="4">0</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">TVA · IS · DSN · comptes</div>
+        <div class="foot"><span class="chip chip-amber">1 montant estimatif</span></div>
+      </div>
+      <div class="card kpi rise">
+        <div class="card-h"><span class="lbl">Indice de confiance</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_SHIELD$</span></div>
+        <div class="val tnum"><span data-count="88" data-suffix=" %">0 %</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">Analyses sourcées et datées</div>
+        <div class="foot"><span class="chip chip-green">$IC_CHECK$ Sources officielles</span></div>
+      </div>
+    </div>
+
+    <!-- AI ALERT -->
+    <section class="alert rise">
+      <div class="row">
+        <div class="lead">
+          <span class="a-tag"><span class="pulse"></span> Alerte prioritaire · Copilote</span>
+          <h2>Risque de trésorerie détecté sur mars</h2>
+          <p>En croisant votre échéancier fournisseurs et le <b>1er acompte d'IS (≈ 4 250 €, estimatif)</b> du 15 mars, le solde projeté tombe à <b>8 400 € en semaine 6</b>. Un encaissement client ACME de 12 000 € est attendu — mais après la date critique.</p>
+          <div class="scen">
+            <div class="s">
+              <h4>Décaler l'acompte via échéancier</h4>
+              <div class="li pro"><span>▲</span><span>Préserve la trésorerie de mars</span></div>
+              <div class="li pro"><span>▲</span><span>Démarche en ligne, rapide</span></div>
+              <div class="li con"><span>▼</span><span>Majoration possible si non encadré</span></div>
+            </div>
+            <div class="s">
+              <h4>Affacturage de la facture ACME</h4>
+              <div class="li pro"><span>▲</span><span>Cash disponible avant l'échéance</span></div>
+              <div class="li pro"><span>▲</span><span>Sécurise le mois</span></div>
+              <div class="li con"><span>▼</span><span>Coût de financement (~1,5 %)</span></div>
+            </div>
+          </div>
+          <div class="reco"><b>Recommandation :</b> relancer ACME dès maintenant ; si non réglé au 5 mars, activer l'affacturage plutôt que décaler l'IS.</div>
+          <div class="a-cta">
+            <button class="btn btn-gold">$IC_ARR$ Ouvrir la trésorerie</button>
+            <button class="btn btn-ghost">Voir l'échéance IS</button>
+          </div>
+          <div class="src">Croisement : relevés bancaires · échéancier · calendrier fiscal · <b style="color:#ffd98a">confiance 88 %</b></div>
+        </div>
+        <div class="aside">
+          <div class="gaugebox">
+            <div class="conf-lbl">Confiance de l'analyse</div>
+            <div class="gauge" data-gauge="88" data-color="#e0b53d">
+              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12"/><circle class="arc" cx="60" cy="60" r="52" fill="none" stroke="#e0b53d" stroke-width="12" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+              <div class="pct"><b class="tnum" data-count="88" data-suffix="%" style="color:#fff">0%</b><small style="color:#9fb1d4">vérifié</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHART + GAUGE -->
+    <div class="grid2">
+      <div class="card rise">
+        <div class="card-h">
+          <span class="lbl">Trésorerie prévisionnelle · 13 semaines</span>
+          <span class="chart-legend"><span><i style="background:var(--navy-800)"></i>Réalisé</span><span><i style="background:var(--gold-400);height:0;border-top:3px dashed var(--gold-400);background:none"></i>Prévisionnel</span></span>
+        </div>
+        <svg id="fcast" viewBox="0 0 640 240" preserveAspectRatio="none" style="width:100%;height:240px;display:block"></svg>
+      </div>
+      <div class="card rise">
+        <div class="card-h"><span class="lbl">Répartition des charges</span><span class="card-ic" style="background:var(--navy-900);color:var(--gold-400)">$IC_CHART$</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-bottom:18px">Ventilation des décaissements du mois · démonstration</div>
+        <div id="bars" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;height:180px"></div>
+      </div>
+    </div>
+
+    <!-- ECHEANCES + ACTIONS + VEILLE -->
+    <div class="grid3">
+      <div class="card rise">
+        <div class="card-h"><span class="lbl">Prochaines échéances</span><span class="card-ic" style="background:var(--gold-050);color:#8a6d12">$IC_CAL$</span></div>
+        <div id="ech"></div>
+      </div>
+      <div class="card rise">
+        <div class="card-h"><span class="lbl">Actions prioritaires</span><span class="card-ic" style="background:var(--red-050);color:var(--red)">$IC_BOLT$</span></div>
+        <div id="acts"></div>
+      </div>
+      <div class="card rise">
+        <div class="card-h"><span class="lbl">Veille intelligente</span><span class="card-ic" style="background:var(--navy-900);color:var(--gold-400)">$IC_SPARK$</span></div>
+        <div class="veille" id="veille"></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="demo-badge">Maquette premium · données de démonstration</div>
+
+<script>{% verbatim %}
+/* ---------- icônes ---------- */
+const I={
+ wallet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14h2"/></svg>',
+ in:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v10M8 11l4 4 4-4M5 19h14"/></svg>',
+ cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg>',
+ shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9.2 11.5l2 2 3.6-3.6"/></svg>',
+ check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4 4 10-10"/></svg>',
+ down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+ clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M13 3v5h5"/></svg>',
+ bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>',
+ spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.6L19.5 10.5 13.9 12.4 12 18 10.1 12.4 4.5 10.5 10.1 8.6z"/></svg>',
+ chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ arr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+};
+const _shell=document.querySelector('.shell');
+_shell.innerHTML=_shell.innerHTML
+ .replace(/\$IC_WALLET\$/g,I.wallet).replace(/\$IC_IN\$/g,I.in).replace(/\$IC_CAL\$/g,I.cal)
+ .replace(/\$IC_SHIELD\$/g,I.shield).replace(/\$IC_CHECK\$/g,I.check).replace(/\$IC_DOWN\$/g,I.down)
+ .replace(/\$IC_CLOCK\$/g,I.clock).replace(/\$IC_DOC\$/g,I.doc).replace(/\$IC_BOLT\$/g,I.bolt)
+ .replace(/\$IC_SPARK\$/g,I.spark).replace(/\$IC_ARR\$/g,I.arr).replace(/\$IC_CHART\$/g,I.chart);
+
+/* ---------- données démo ---------- */
+const ECH=[
+ {t:'TVA — CA3 janvier',m:'≈ 6 200 €',me:0,d:'12 fév.',st:'ok'},
+ {t:'Relance client ACME',m:'12 000 €',me:0,d:'20 fév.',st:'warn'},
+ {t:'1er acompte d\'IS',m:'≈ 4 250 €',me:1,d:'15 mars',st:'warn'},
+ {t:'DSN mensuelle',m:'',me:0,d:'05 mars',st:'ok'},
+ {t:'Approbation des comptes',m:'',me:0,d:'30 juin',st:'ok'}
+];
+const ACTS=[
+ {c:'#d64545',t:'Relancer ACME (12 000 €)',m:'Encaissement critique avant le 5 mars'},
+ {c:'#e0b53d',t:'Préparer l\'acompte d\'IS',m:'Montant estimatif à confirmer'},
+ {c:'#2c6fb0',t:'Compléter 3 pièces manquantes',m:'Score de confiance sous le seuil'}
+];
+const VEI=[
+ {c:'#2c6fb0',t:'Fiscal',b:'Acompte d\'IS : rappel des modalités de modulation via votre espace professionnel.'},
+ {c:'#1f9d6b',t:'Social',b:'DSN : aucune anomalie détectée sur la dernière déclaration.'},
+ {c:'#c9a227',t:'Juridique',b:'Approbation des comptes à prévoir dans les 6 mois suivant la clôture.'}
+];
+const ech=document.getElementById('ech');
+ECH.forEach(e=>{const dcl=e.st==='warn'?'warn':(e.st==='due'?'due':'');ech.insertAdjacentHTML('beforeend',
+ `<div class="row-item"><span class="t">${e.t}${e.m?` <small>· <b class="amount" style="color:${e.me?'#8a6d12':'#64748b'}">${e.m}</b></small>`:''}</span><span class="date-pill ${dcl}">${e.d}</span></div>`);});
+const acts=document.getElementById('acts');
+ACTS.forEach(a=>acts.insertAdjacentHTML('beforeend',`<div class="act"><span class="stripe" style="background:${a.c}"></span><div><div class="t">${a.t}</div><div class="m">${a.m}</div></div></div>`));
+const vv=document.getElementById('veille');
+VEI.forEach(v=>vv.insertAdjacentHTML('beforeend',`<div class="vcard" style="--c:${v.c}"><span class="vt">${I.spark} Veille ${v.t}</span><div class="vb">${v.b}</div></div>`));
+
+/* ---------- bars (répartition) ---------- */
+const BARS=[['Fournisseurs',18200,'#14306b'],['Salaires',22500,'#2c6fb0'],['Fiscal',6200,'#c9a227'],['Social',4800,'#1f9d6b'],['Autres',2100,'#8fbbee']];
+const bmax=Math.max(...BARS.map(b=>b[1]));
+const barsEl=document.getElementById('bars');
+BARS.forEach(b=>{const hpx=Math.round(b[1]/bmax*120);barsEl.insertAdjacentHTML('beforeend',
+ `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">`+
+ `<div class="tnum" style="font-size:11px;font-weight:700;color:var(--ink-soft);margin-bottom:7px">${(b[1]/1000).toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1})} k€</div>`+
+ `<div class="bar" data-h="${hpx}" style="width:100%;max-width:44px;height:0;background:linear-gradient(180deg,${b[2]},${b[2]}cc);border-radius:8px 8px 0 0;transition:height 1.1s cubic-bezier(.22,.61,.36,1)"></div>`+
+ `<div style="font-size:10.5px;color:#64748b;font-weight:600;margin-top:8px;text-align:center">${b[0]}</div></div>`);});
+
+/* ---------- count-up ---------- */
+function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1400;
+ (function step(n){const p=Math.min(1,(n-t0)/dur),e=1-Math.pow(1-p,3),v=Math.round(to*e);
+ el.textContent=v.toLocaleString('fr-FR')+suf;if(p<1)requestAnimationFrame(step);})(t0);}
+
+/* ---------- sparkline draw ---------- */
+function drawSpark(svg){const pts=svg.dataset.spark.split(' ').map(s=>s.split(',').map(Number));
+ const d='M'+pts.map(p=>p.join(',')).join(' L');
+ const area=d+` L216,40 L8,40 Z`;
+ const id='g'+Math.random().toString(36).slice(2,7);
+ svg.innerHTML=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c6fb0" stop-opacity=".22"/><stop offset="1" stop-color="#2c6fb0" stop-opacity="0"/></linearGradient></defs>`+
+  `<path d="${area}" fill="url(#${id})"/>`+
+  `<path d="${d}" fill="none" stroke="#2c6fb0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.4s ease"/>`;
+ requestAnimationFrame(()=>{svg.querySelector('path[stroke]').style.strokeDashoffset='0';});}
+
+/* ---------- forecast chart ---------- */
+function forecast(){const svg=document.getElementById('fcast');const W=640,H=240,pad=16;
+ // valeurs (k€) : réalisé 4 pts, prévisionnel 9 pts, creux à S6 puis reprise
+ const real=[131,120,112,96],prev=[96,70,42,18,8.4,26,48,72,95];
+ const all=real.concat(prev.slice(1));const n=all.length;
+ const max=140,min=0;const X=i=>pad+i*((W-2*pad)/(n-1));const Y=v=>H-24-((v-min)/(max-min))*(H-52);
+ const pt=all.map((v,i)=>[X(i),Y(v)]);
+ const line=a=>'M'+a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L');
+ const realPts=pt.slice(0,4),prevPts=pt.slice(3);
+ // grille
+ let g='';for(let k=0;k<=4;k++){const y=24+k*((H-52)/4);g+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#eef1f7" stroke-width="1"/><text x="0" y="${y+3}" font-size="9" fill="#94a3b8">${Math.round(max-k*max/4)}k</text>`;}
+ const areaR=line(realPts)+` L${realPts[realPts.length-1][0]},${H-24} L${realPts[0][0]},${H-24} Z`;
+ const lo=pt[8];// S6 creux (index 8)
+ svg.innerHTML=`<defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14306b" stop-opacity=".20"/><stop offset="1" stop-color="#14306b" stop-opacity="0"/></linearGradient></defs>`+
+  g+
+  `<path d="${areaR}" fill="url(#fg)"/>`+
+  `<path d="${line(realPts)}" fill="none" stroke="#14306b" stroke-width="3" stroke-linecap="round" pathLength="1" class="ln" style="stroke-dasharray:1;stroke-dashoffset:1"/>`+
+  `<path d="${line(prevPts)}" fill="none" stroke="#c9a227" stroke-width="3" stroke-dasharray="1" stroke-linecap="round" pathLength="1" class="ln2" style="stroke-dashoffset:1"/>`+
+  `<circle class="lo-marker" cx="${lo[0].toFixed(1)}" cy="${lo[1].toFixed(1)}" r="5" style="opacity:0;transition:opacity .4s .9s"/>`+
+  `<text x="${lo[0].toFixed(1)}" y="${(lo[1]-12).toFixed(1)}" font-size="11" font-weight="700" fill="#d64545" text-anchor="middle" style="opacity:0;transition:opacity .4s 1s">8 400 € · S6</text>`;
+ requestAnimationFrame(()=>{const a=svg.querySelector('.ln'),b=svg.querySelector('.ln2');
+  a.style.transition='stroke-dashoffset 1.1s ease';a.style.strokeDashoffset='0';
+  b.style.transition='stroke-dashoffset 1.1s ease .9s';b.style.strokeDashoffset='0';
+  svg.querySelector('.lo-marker').style.opacity='1';svg.querySelector('text[fill="#d64545"]').style.opacity='1';});}
+
+/* ---------- gauges ---------- */
+function gauge(el){const pct=+el.dataset.gauge,arc=el.querySelector('.arc'),r=52,C=2*Math.PI*r;
+ arc.style.strokeDasharray=C;arc.style.strokeDashoffset=C;
+ requestAnimationFrame(()=>{arc.style.transition='stroke-dashoffset 1.4s cubic-bezier(.22,.61,.36,1)';arc.style.strokeDashoffset=C*(1-pct/100);});}
+
+/* ---------- observer : anime à l'apparition ---------- */
+const seen=new WeakSet();
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);
+  const el=e.target;
+  if(el.classList.contains('rise'))el.classList.add('in');
+  el.querySelectorAll?.('[data-count]').forEach(countUp);
+  el.querySelectorAll?.('[data-spark]').forEach(drawSpark);
+  el.querySelectorAll?.('.gauge').forEach(gauge);
+  el.querySelectorAll?.('.bar').forEach(b=>{b.style.height=b.dataset.h+'px';});
+  if(el.querySelector?.('#fcast'))forecast();
+ });},{threshold:.25});
+document.querySelectorAll('.card,.alert').forEach((c,i)=>{c.style.transitionDelay=(Math.min(i,6)*60)+'ms';io.observe(c);});
+{% endverbatim %}</script>
+</body>
+</html>
