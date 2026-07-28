@@ -3,6 +3,9 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {# Amélioration progressive : marque la présence de JS avant le 1er rendu.
+           Sans JS, les blocs .reveal restent visibles (voir marketing.css). #}
+        <script>document.documentElement.classList.add('js');</script>
         <title>{% block title %}RAF360 — Le copilote financier des TPE et PME{% endblock %}</title>
         <meta name="description" content="{% block meta_description %}RAF360 centralise le pilotage financier, comptable, fiscal, social et juridique des TPE et PME : collecte et contrôle des documents, suivi des échéances, trésorerie éclairée, et orientation vers le bon professionnel habilité.{% endblock %}">
 

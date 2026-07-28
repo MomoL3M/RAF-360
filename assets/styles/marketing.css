@@ -562,6 +562,7 @@
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--navy-900);
+  white-space: nowrap; /* la devise € ne se sépare jamais du montant */
 }
 .featured .price-amount {
   color: #fff;
@@ -829,23 +830,27 @@
 }
 
 /* ===================== SCROLL REVEAL ===================== */
+/* État masqué appliqué UNIQUEMENT si JS est présent (classe .js posée dans <head>).
+   Sans JS, aucun .reveal n'est masqué → tout le contenu reste visible (§4.4/§10). */
 .reveal {
-  opacity: 0;
-  transform: translateY(26px);
   transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
   will-change: opacity, transform;
+}
+.js .reveal {
+  opacity: 0;
+  transform: translateY(26px);
 }
 .reveal.in {
   opacity: 1;
   transform: none;
 }
-.reveal[data-anim="left"] {
+.js .reveal[data-anim="left"] {
   transform: translateX(-32px);
 }
-.reveal[data-anim="right"] {
+.js .reveal[data-anim="right"] {
   transform: translateX(32px);
 }
-.reveal[data-anim="scale"] {
+.js .reveal[data-anim="scale"] {
   transform: scale(0.94);
 }
 .reveal.in[data-anim] {

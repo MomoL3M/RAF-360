@@ -1,6 +1,6 @@
 {% extends 'marketing/base_marketing.html.twig' %}
 
-{% block title %}RAF360 — Le pilotage financier de votre entreprise, enfin sous contrôle{% endblock %}
+{% block title %}RAF360 — Le poste de pilotage de votre entreprise{% endblock %}
 {% block meta_description %}RAF360 centralise le pilotage financier, comptable, fiscal, social et juridique des TPE et PME. Un copilote veille en continu, anticipe les risques et oriente chaque sujet réglementé vers le bon professionnel habilité.{% endblock %}
 
 {% block marketing %}
@@ -17,7 +17,7 @@
                         <span class="pill"><span class="pill-dot"></span> France · Sources officielles uniquement</span>
                     </span>
                     <h1 class="display reveal" data-controller="reveal" style="transition-delay:60ms;margin-bottom:22px;">
-                        Le pilotage financier de votre entreprise, <span class="gold-em">enfin sous contrôle.</span>
+                        Le poste de pilotage de votre entreprise, <span class="gold-em">enfin sous contrôle</span>
                     </h1>
                     <p class="lead reveal" data-controller="reveal" style="transition-delay:120ms;max-width:540px;margin-bottom:30px;">
                         RAF360 centralise votre pilotage financier, comptable, fiscal, social et juridique. Un copilote veille
@@ -39,14 +39,35 @@
                         <div class="product-frame">
                             <div class="inner">
                                 <div class="win-dots"><i></i><i></i><i></i></div>
-                                <div style="padding:20px;">
-                                    <div style="height:10px;width:38%;background:var(--ice);border-radius:6px;margin-bottom:14px;"></div>
-                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
-                                        <div style="height:56px;background:var(--paper-3);border-radius:10px;"></div>
-                                        <div style="height:56px;background:var(--paper-3);border-radius:10px;"></div>
-                                        <div style="height:56px;background:var(--paper-3);border-radius:10px;"></div>
+                                <div style="padding:18px 20px 20px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                                        <span style="font-size:11.5px;color:var(--muted);font-weight:600;">Trésorerie prévisionnelle · 13 semaines</span>
+                                        <span style="font-size:11px;color:var(--green);font-weight:700;display:inline-flex;align-items:center;gap:3px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18l6-7 4 4 6-8"/><path d="M20 7h-4M20 7v4"/></svg>
+                                            en progression
+                                        </span>
                                     </div>
-                                    <div style="height:120px;background:linear-gradient(180deg,var(--paper-2),#fff);border:1px solid var(--hairline);border-radius:12px;"></div>
+                                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px;">
+                                        <span style="font-family:var(--font-serif-stack);font-size:28px;font-weight:600;color:var(--green);white-space:nowrap;letter-spacing:-0.02em;">75 000 €</span>
+                                        <span style="font-size:12px;color:var(--muted);">solde projeté</span>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+                                        <div style="height:44px;background:var(--paper-3);border-radius:9px;"></div>
+                                        <div style="height:44px;background:var(--paper-3);border-radius:9px;"></div>
+                                        <div style="height:44px;background:var(--paper-3);border-radius:9px;"></div>
+                                    </div>
+                                    <svg viewBox="0 0 320 110" width="100%" height="110" role="img" aria-label="Courbe de trésorerie prévisionnelle en progression sur 13 semaines" style="display:block;">
+                                        <defs>
+                                            <linearGradient id="cashFill" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" style="stop-color:var(--green);stop-opacity:0.22"/>
+                                                <stop offset="100%" style="stop-color:var(--green);stop-opacity:0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <line x1="0" y1="98" x2="320" y2="98" style="stroke:var(--hairline);stroke-width:1"/>
+                                        <path d="M4,90 L48,84 L92,86 L136,72 L180,64 L224,50 L268,40 L312,20 L312,98 L4,98 Z" fill="url(#cashFill)"/>
+                                        <path d="M4,90 L48,84 L92,86 L136,72 L180,64 L224,50 L268,40 L312,20" fill="none" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--green);stroke-width:2.4"/>
+                                        <circle cx="312" cy="20" r="4.5" style="fill:var(--green);stroke:#fff;stroke-width:2"/>
+                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +83,7 @@
                     </div>
                     <div class="float-card floaty" style="bottom:-20px;right:-14px;animation-delay:1.5s;">
                         <div style="font-size:11px;color:var(--muted);font-weight:600;">Prévision de trésorerie</div>
-                        <div style="font-size:15px;font-weight:700;color:var(--navy);">Point bas anticipé</div>
+                        <div style="font-size:15px;font-weight:700;color:var(--navy);">Anticipée à 13 semaines</div>
                     </div>
                 </div>
             </div>
@@ -86,11 +107,17 @@
     {# ===================== STATS (fond sombre) ===================== #}
     <section class="section band-dark on-dark">
         <div class="container">
+            {% set stats = [
+                { to: 360, suffix: '°', label: 'Financier · comptable · fiscal · social · juridique' },
+                { to: 5, suffix: ' domaines', label: 'de veille suivis en continu' },
+                { to: 100, suffix: ' %', label: 'sources officielles, jamais inventées' },
+                { to: 1, suffix: ' SIREN', label: 'suffit pour démarrer' },
+            ] %}
             <div class="stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px;">
-                {% for s in [['360°','Financier · fiscal · social · juridique'], ['5 domaines','de veille suivis en continu'], ['100 %','sources officielles, jamais inventées'], ['1 SIREN','suffit pour démarrer']] %}
+                {% for s in stats %}
                     <div class="reveal" data-controller="reveal" style="transition-delay:{{ loop.index0 * 90 }}ms;text-align:center;">
-                        <div class="stat-num">{{ s[0] }}</div>
-                        <div class="stat-label">{{ s[1] }}</div>
+                        <div class="stat-num" data-controller="countup" data-countup-to-value="{{ s.to }}" data-countup-suffix-value="{{ s.suffix }}">{{ s.to }}{{ s.suffix }}</div>
+                        <div class="stat-label">{{ s.label }}</div>
                     </div>
                 {% endfor %}
             </div>
@@ -110,7 +137,7 @@
         <div class="container">
             <div style="max-width:720px;margin-bottom:52px;">
                 <div class="eyebrow reveal" data-controller="reveal" style="margin-bottom:16px;">Un système d'exploitation du dirigeant</div>
-                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;margin-bottom:18px;">Tout ce qui pèse sur vos épaules, réuni et anticipé.</h2>
+                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;margin-bottom:18px;">Tout ce qui pèse sur vos épaules, réuni et anticipé</h2>
                 <p class="lead reveal" data-controller="reveal" style="transition-delay:120ms;">
                     RAF360 ne se substitue jamais à un professionnel. Il collecte, contrôle, éclaire vos décisions et vous met
                     en relation avec l'expert habilité quand c'est nécessaire.
@@ -148,11 +175,12 @@
         <div class="container">
             <div style="text-align:center;max-width:680px;margin:0 auto 54px;">
                 <div class="eyebrow reveal" data-controller="reveal" style="margin-bottom:16px;justify-content:center;">Comment ça marche</div>
-                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;">Opérationnel en quatre étapes.</h2>
+                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;">Opérationnel en quatre étapes</h2>
             </div>
+            {# Les 4 étapes restent affichées en permanence (pas de gating au scroll) — demande PM. #}
             <div class="steps">
                 {% for s in steps %}
-                    <div class="step reveal" data-controller="reveal" style="transition-delay:{{ loop.index0 * 90 }}ms;">
+                    <div class="step">
                         <span class="step-n">{{ '%02d'|format(loop.index) }}</span>
                         <h3>{{ s.t }}</h3>
                         <p>{{ s.d }}</p>
@@ -174,7 +202,7 @@
             <div class="showcase-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;">
                 <div class="reveal" data-controller="reveal" data-anim="left">
                     <span class="eyebrow on-dark" style="margin-bottom:16px;">Confiance &amp; conformité</span>
-                    <h2 class="h2" style="margin-bottom:18px;">Sérieux réglementaire, par conception.</h2>
+                    <h2 class="h2" style="margin-bottom:18px;">La conformité réglementaire, par conception</h2>
                     <p class="lead" style="margin-bottom:28px;">
                         RAF360 respecte une séparation stricte entre l'outil (SaaS) et les actes réglementés, confiés aux
                         professionnels habilités. Aucune commission sur leurs honoraires. Vos données restent les vôtres.
@@ -207,7 +235,7 @@
         <div class="container">
             <div style="text-align:center;max-width:680px;margin:0 auto 40px;">
                 <div class="eyebrow reveal" data-controller="reveal" style="margin-bottom:16px;justify-content:center;">Ils pilotent avec RAF360</div>
-                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;">La sérénité, mesurable.</h2>
+                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;">La sérénité, mesurable</h2>
             </div>
             <div class="reveal surface" data-controller="reveal" style="max-width:640px;margin:0 auto;text-align:center;color:var(--muted);">
                 <p style="margin:0;font-size:15px;line-height:1.6;">Les témoignages clients réels seront publiés ici après validation. Aucun avis n'est inventé.</p>
@@ -228,7 +256,7 @@
         <div class="container">
             <div style="text-align:center;max-width:680px;margin:0 auto 52px;">
                 <div class="eyebrow reveal" data-controller="reveal" style="margin-bottom:16px;justify-content:center;">Tarifs</div>
-                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;margin-bottom:16px;">Un tarif clair, sans surprise.</h2>
+                <h2 class="h2 reveal" data-controller="reveal" style="transition-delay:60ms;margin-bottom:16px;">Un tarif clair, sans surprise</h2>
                 <p class="lead reveal" data-controller="reveal" style="transition-delay:120ms;">Essayez sans engagement. Changez ou arrêtez à tout moment.</p>
             </div>
             <div class="price-grid">
@@ -263,7 +291,7 @@
     {# ===================== CTA FINAL ===================== #}
     <section class="section band-dark on-dark" style="text-align:center;">
         <div class="container container-narrow">
-            <h2 class="h2 reveal" data-controller="reveal" style="margin-bottom:20px;">Reprenez la main sur vos finances, dès aujourd'hui.</h2>
+            <h2 class="h2 reveal" data-controller="reveal" style="margin-bottom:20px;">Reprenez la main sur le pilotage de votre entreprise, dès aujourd'hui</h2>
             <p class="lead reveal" data-controller="reveal" style="transition-delay:80ms;margin:0 auto 32px;max-width:620px;">
                 Rejoignez les dirigeants qui pilotent sereinement leur entreprise avec RAF360. Diagnostic gratuit, sans engagement.
             </p>
