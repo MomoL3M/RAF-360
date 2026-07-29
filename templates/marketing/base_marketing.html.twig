@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <a href="#contenu" class="skip-link">Aller au contenu</a>
     {{ include('marketing/_header.html.twig') }}
-    <main class="mkt">
+    <main class="mkt" id="contenu" tabindex="-1">
         {% block marketing %}{% endblock %}
     </main>
     {{ include('marketing/_footer.html.twig') }}

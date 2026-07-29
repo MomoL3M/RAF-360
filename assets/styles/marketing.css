@@ -100,7 +100,7 @@
 }
 
 .gold-em {
-  color: var(--gold-500);
+  color: var(--gold-ink);
   font-style: italic;
 }
 
@@ -498,7 +498,7 @@
   font-family: var(--font-sans-stack);
   font-size: 15px;
   font-weight: 700;
-  color: var(--gold-600);
+  color: var(--gold-ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1040,7 +1040,7 @@
   background: var(--navy-600);
 }
 .consent__btn:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--navy);
   outline-offset: 2px;
 }
 .consent-reopen {
@@ -1059,4 +1059,47 @@
   .consent__btn {
     flex: 1;
   }
+}
+
+/* --- Accessibilité (§10 / WCAG 2.2) --- */
+/* Lien d'évitement : hors écran jusqu'au focus clavier, puis visible en haut à gauche. */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 2000;
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.18s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+/* Le header collant n'obscurcit jamais le focus ni une ancre (WCAG 2.2 §2.4.11). */
+html {
+  scroll-padding-top: 5rem;
+}
+/* Indicateur de focus clavier cohérent : outline navy (fonds clairs/or) + halo blanc
+   (fonds foncés). Les champs de formulaire gardent leur propre style (.form-field:focus). */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.85);
+}
+/* Pied de page (fond navy) : outline blanc, non tributaire d'un halo éventuellement rogné. */
+.mkt-footer a:focus-visible {
+  outline-color: #fff;
+}
+/* Cible du lien d'évitement : pas d'encadré (focus programmatique, non interactif). */
+#contenu:focus,
+#contenu:focus-visible {
+  outline: none;
+  box-shadow: none;
 }

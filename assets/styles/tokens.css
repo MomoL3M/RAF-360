@@ -93,6 +93,9 @@
   --gold-600: #d98a10;
   --gold-500: #eda323;
   --gold-400: #f6b743;
+  /* ambre pour TEXTE sur fond clair : contraste AA (>= 4.5:1) — l'ambre vif échoue
+     sur blanc/paper. Réservé au texte ; les fonds de CTA gardent --gold. (§10, registre 0-R-V) */
+  --gold-ink: #8a5e00;
 
   /* neutres marketing */
   --paper: #ffffff;
