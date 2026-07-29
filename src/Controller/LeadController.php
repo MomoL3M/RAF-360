@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Dto\ContactRequest;
 use App\Dto\DiagnosticRequest;
+use App\Service\LeadNotifier;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class LeadController extends AbstractController
 {
     #[Route('/contact', name: 'contact', methods: ['GET', 'POST'])]
-    public function contact(Request $request, ValidatorInterface $validator, RateLimiterFactory $leadFormLimiter, LoggerInterface $logger): Response
+    public function contact(Request $request, ValidatorInterface $validator, RateLimiterFactory $leadFormLimiter, LoggerInterface $logger, LeadNotifier $leadNotifier): Response
     {
         $data = new ContactRequest();
         $errors = [];
@@ -39,6 +40,7 @@ final class LeadController extends AbstractController
             $errors = $this->guardAndValidate($request, $validator, $leadFormLimiter, $data);
             if ([] === $errors) {
                 $logger->info('Lead contact reçu', ['email' => $data->email, 'societe' => $data->societe]);
+                $leadNotifier->handleContact($data);
 
                 return $this->acknowledge('contact');
             }
@@ -48,7 +50,7 @@ final class LeadController extends AbstractController
     }
 
     #[Route('/diagnostic', name: 'diagnostic', methods: ['GET', 'POST'])]
-    public function diagnostic(Request $request, ValidatorInterface $validator, RateLimiterFactory $leadFormLimiter, LoggerInterface $logger): Response
+    public function diagnostic(Request $request, ValidatorInterface $validator, RateLimiterFactory $leadFormLimiter, LoggerInterface $logger, LeadNotifier $leadNotifier): Response
     {
         $data = new DiagnosticRequest();
         $errors = [];
@@ -65,6 +67,7 @@ final class LeadController extends AbstractController
             $errors = $this->guardAndValidate($request, $validator, $leadFormLimiter, $data);
             if ([] === $errors) {
                 $logger->info('Diagnostic demandé', ['siren' => $data->siren]);
+                $leadNotifier->handleDiagnostic($data);
 
                 return $this->acknowledge('diagnostic');
             }

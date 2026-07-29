@@ -1,0 +1,16 @@
+# Suivi d'erreurs serveur (§21). Désactivé tant que SENTRY_DSN est vide (dev).
+# En production : renseigner SENTRY_DSN (projet Sentry hébergé dans l'UE — RGPD).
+sentry:
+    dsn: "%env(SENTRY_DSN)%"
+    # RGPD : aucune donnée personnelle envoyée à Sentry (§17.1, §2.6).
+    options:
+        send_default_pii: false
+        # Traçage de performance désactivé par défaut (coût) ; à activer au besoin.
+        traces_sample_rate: 0.0
+        # Environnement remonté dans Sentry.
+        environment: "%kernel.environment%"
+
+when@dev:
+    sentry:
+        # En dev, ne rien envoyer même si un DSN traîne dans l'environnement.
+        dsn: ~

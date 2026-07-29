@@ -1,0 +1,19 @@
+{% extends 'emails/_base.html.twig' %}
+
+{% block content %}
+    <h1 style="margin:0 0 14px;font-size:21px;color:#14306b;">Merci{% if nom %}, {{ nom }}{% endif %} !</h1>
+    <p style="margin:0 0 14px;font-size:15px;line-height:1.6;">
+        {% if type == 'contact' %}
+            Nous avons bien reçu votre message. Notre équipe revient vers vous sous 1 jour ouvré.
+        {% else %}
+            Votre demande de diagnostic est bien enregistrée. Nous préparons votre aperçu de préparation et revenons vers vous très vite.
+        {% endif %}
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;">En attendant, découvrez le fonctionnement de RAF360 :</p>
+    <p style="margin:0 0 8px;">
+        <a href="{{ url('produit') }}" style="display:inline-block;background:#eda323;color:#14306b;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:9px;">Découvrir le produit</a>
+    </p>
+    <p style="margin:22px 0 0;font-size:13px;color:#64708f;line-height:1.6;">
+        Une question ? Contactez-nous via la <a href="{{ url('contact') }}" style="color:#14306b;">page contact</a>.
+    </p>
+{% endblock %}
