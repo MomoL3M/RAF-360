@@ -35,4 +35,10 @@ final class AppController extends AbstractController
     {
         return $this->render('app/treasury.html.twig');
     }
+
+    #[Route('/calendar', name: 'app_calendar', methods: ['GET'])]
+    public function calendar(): Response
+    {
+        return $this->render('app/echeances.html.twig');
+    }
 }

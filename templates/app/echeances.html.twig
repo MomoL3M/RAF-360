@@ -1,0 +1,227 @@
+{# Échéances /app — porté de la maquette premium (document autonome). Filtres, rail
+   chronologique, pastille date, montant réel/estimatif, priorité, statut. Démonstration. #}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Échéances — RAF360</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-400.woff2') }}') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+
+:root{
+  --paper:#eef1f7;--surface:#fff;--surface-2:#f7f9fc;
+  --navy-950:#081633;--navy-900:#0d1f4c;--navy-800:#14306b;--navy-700:#1d4487;
+  --gold:#c9a227;--gold-400:#e0b53d;--gold-050:#fbf4dd;
+  --green:#1f9d6b;--green-050:#e7f6ef;--red:#d64545;--red-050:#fceaea;
+  --blue:#2c6fb0;--blue-050:#e9f1fa;--blue-300:#8fbbee;
+  --ink:#0f1c34;--ink-soft:#33415c;--slate:#64748b;--hairline:#e5e9f2;
+  --sans:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+  --sh-sm:0 1px 2px rgba(13,31,76,.06),0 1px 3px rgba(13,31,76,.05);
+  --sh-md:0 6px 16px rgba(13,31,76,.08),0 2px 6px rgba(13,31,76,.05);
+  --sh-lg:0 24px 60px rgba(13,31,76,.16);
+  --r:18px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--sans);color:var(--ink);background:
+  radial-gradient(1200px 600px at 100% -5%,rgba(143,187,238,.18),transparent 55%),
+  radial-gradient(900px 500px at -10% 0%,rgba(224,181,61,.10),transparent 50%),var(--paper);
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--navy-900),var(--navy-950));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--gold-400),var(--gold));display:grid;place-items:center;color:var(--navy-950);font-family:var(--sans);font-weight:800;font-size:18px}
+.brand b{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand b i{color:var(--gold-400);font-style:normal}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;color:#c7d3ea;text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.nav a.on{background:linear-gradient(90deg,rgba(224,181,61,.18),rgba(224,181,61,.02));color:#fff;box-shadow:inset 2px 0 0 var(--gold-400)}
+.side .spacer{flex:1}
+.side .who{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.side .who .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--blue-300),var(--navy-700));display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff}
+.side .who small{display:block;color:#9fb1d4;font-size:11px}
+.side .who span{font-size:13px;font-weight:600}
+
+.main{padding:26px 30px 60px;min-width:0}
+.topline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.topline h1{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;color:var(--navy-900)}
+.topline p{color:var(--slate);font-size:14px;margin-top:4px}
+.demo-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-050);color:#8a6d12;border:1px solid #ecd9a0;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+
+.card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);box-shadow:var(--sh-sm);padding:20px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.kpi .top{font-size:12px;color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.kpi .val{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;margin:7px 0 2px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .sub{font-size:12px;color:var(--slate)}
+.kpi .val.red{color:var(--red)}.kpi .val.navy{color:var(--navy-900)}.kpi .val.gold{color:#8a6d12}
+
+.alert{position:relative;overflow:hidden;border-radius:22px;color:#eaf0fb;background:radial-gradient(700px 300px at 88% -20%,rgba(44,111,176,.28),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950));box-shadow:var(--sh-lg);padding:22px 24px;margin-bottom:16px}
+.a-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9fc7f2}
+.a-tag .pulse{width:9px;height:9px;border-radius:50%;background:var(--blue-300);box-shadow:0 0 0 0 rgba(143,187,238,.7);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(143,187,238,.6)}70%{box-shadow:0 0 0 12px rgba(143,187,238,0)}100%{box-shadow:0 0 0 0 rgba(143,187,238,0)}}
+.alert h2{font-family:var(--sans);font-weight:800;font-size:20px;margin:11px 0 8px;color:#fff;letter-spacing:-.02em}
+.alert p{font-size:14px;line-height:1.6;color:#cbd7ee;max-width:74ch}
+.alert p b{color:#fff}
+.src{margin-top:12px;font-size:11.5px;color:#8ea1c6}
+
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.filters{display:inline-flex;gap:8px;flex-wrap:wrap}
+.fbtn{border:1px solid var(--hairline);background:var(--surface);color:var(--ink-soft);font:600 13px/1 var(--sans);padding:9px 14px;border-radius:999px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px}
+.fbtn:hover{border-color:var(--blue-300)}
+.fbtn.on{background:var(--navy-900);color:#fff;border-color:var(--navy-900)}
+.fbtn .n{font-variant-numeric:tabular-nums;opacity:.7;font-weight:700}
+.fbtn.on .n{opacity:.9}
+
+/* liste échéances (rail chronologique) */
+.timeline{position:relative;padding-left:6px}
+.list-row{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 18px;border-radius:14px;border:1px solid var(--hairline);background:var(--surface);box-shadow:var(--sh-sm);margin-bottom:12px;transition:transform .25s var(--ease),box-shadow .25s var(--ease),opacity .3s}
+.list-row:hover{transform:translateX(3px);box-shadow:var(--sh-md)}
+.list-row.overdue{background:var(--red-050);border-color:#f3c9c9}
+.lr-left{display:flex;align-items:center;gap:15px;min-width:0}
+.date-chip{width:52px;height:52px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.date-chip .d{font-family:var(--sans);font-size:17px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.date-chip .m{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--slate);margin-top:2px}
+.lr-title{font-size:15px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.amt-chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+.amt-chip.reel{color:var(--slate);border-color:var(--hairline);background:var(--surface-2)}
+.amt-chip.estim{color:#8a6d12;border-color:#ecd9a0;background:var(--gold-050)}
+.lr-meta{font-size:12px;color:var(--slate);margin-top:3px}
+.lr-meta b{color:var(--red)}
+.lr-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.badge{font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:999px;white-space:nowrap}
+.badge.red{background:var(--red-050);color:var(--red)}
+.badge.slate{background:#eef1f7;color:var(--ink-soft)}
+.badge.gold{background:var(--gold-050);color:#8a6d12}
+.prio-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.btn-prep{border:1px solid var(--hairline);background:var(--surface);color:var(--navy-800);font:700 12.5px/1 var(--sans);padding:9px 13px;border-radius:10px;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-prep:hover{background:var(--navy-900);color:#fff;border-color:var(--navy-900)}
+.empty{padding:26px;text-align:center;color:var(--slate);font-size:14px}
+
+.rise{opacity:0;transform:translateY(20px)}
+.rise.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.demo-badge{position:fixed;right:14px;bottom:14px;z-index:99;background:var(--navy-900);color:#fff;font:600 12px/1.4 var(--sans);padding:9px 13px;border-radius:10px;box-shadow:var(--sh-md);opacity:.92}
+
+@media(max-width:1080px){.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side .spacer,.side .who{display:none}.nav{flex-direction:row;flex-wrap:wrap}.main{padding:20px 16px 50px}.kpis{grid-template-columns:1fr 1fr}.list-row{flex-direction:column;align-items:flex-start}.lr-right{width:100%;justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">R</span><b>RAF<i>360</i></b></div>
+    <nav class="nav">
+      <a href="{{ path('app_dashboard') }}">Tableau de bord</a>
+      <a href="{{ path('app_treasury') }}">Trésorerie</a>
+      <a href="#" class="on">◆ Échéances</a>
+      <a href="#">Documents</a>
+      <a href="#">Factures</a>
+      <a href="#">Data room</a>
+      <a href="#">Actions</a>
+      <a href="#">Copilote IA</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topline">
+      <div>
+        <h1>Calendrier des obligations</h1>
+        <p>Trié de la date la plus proche à la plus lointaine — chaque règle est datée et sourcée.</p>
+      </div>
+      <span class="demo-pill">● Données de démonstration</span>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi rise"><div class="top">Obligations suivies</div><div class="val navy tnum"><span data-count="6">0</span></div><div class="sub">sur les 12 prochains mois</div></div>
+      <div class="card kpi rise"><div class="top">En retard</div><div class="val red tnum"><span data-count="1">0</span></div><div class="sub">à régulariser en priorité</div></div>
+      <div class="card kpi rise"><div class="top">À venir · 30 jours</div><div class="val navy tnum"><span data-count="2">0</span></div><div class="sub">à préparer ce mois</div></div>
+      <div class="card kpi rise"><div class="top">Montant à provisionner</div><div class="val gold tnum"><span data-count="11650" data-suffix=" €">0 €</span></div><div class="sub">dont 8 230 € estimatifs</div></div>
+    </div>
+
+    <section class="alert rise">
+      <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
+      <h2>1<sup>er</sup> acompte d'IS : ≈ 4 250 € estimés</h2>
+      <p>Estimation calculée à partir de votre dernier IS connu (1/4 de l'IS N-1). Le copilote affinera le montant réel dès réception de la liasse. <b>Prévoir la provision avant le 15 septembre.</b></p>
+      <div class="src">Base : impôt sur les sociétés N-1 (démonstration) · à confirmer avec votre expert-comptable</div>
+    </section>
+
+    <div class="card rise">
+      <div class="toolbar">
+        <div class="filters" id="filters">
+          <button class="fbtn on" data-f="all">Toutes <span class="n">6</span></button>
+          <button class="fbtn" data-f="retard"><span class="prio-dot" style="background:var(--red)"></span> En retard <span class="n">1</span></button>
+          <button class="fbtn" data-f="afaire">À faire <span class="n">4</span></button>
+          <button class="fbtn" data-f="avalider"><span class="prio-dot" style="background:var(--gold)"></span> À valider <span class="n">1</span></button>
+        </div>
+      </div>
+      <div class="timeline" id="list"></div>
+      <div class="empty" id="empty" style="display:none">Aucune obligation dans ce filtre.</div>
+    </div>
+  </main>
+</div>
+<div class="demo-badge">Maquette premium · données de démonstration</div>
+
+<script>{% verbatim %}
+/* échéances démo, triées proche -> lointain (base : 29 juil. 2026) */
+const ECH=[
+ {t:"TVA (CA3) — Juin",d:"24",m:"juil.",statut:"En retard",key:"retard",prio:"Haute",montant:"3 420 €",mt:"réel",overdue:true},
+ {t:"Déclaration TVA (CA3) — Juillet",d:"12",m:"août",statut:"À faire",key:"afaire",prio:"Haute",montant:"3 980 €",mt:"estimatif"},
+ {t:"Renouvellement bail commercial",d:"20",m:"août",statut:"À valider",key:"avalider",prio:"Moyenne"},
+ {t:"DSN mensuelle — Août",d:"05",m:"sept.",statut:"À faire",key:"afaire",prio:"Haute"},
+ {t:"1er acompte d'IS",d:"15",m:"sept.",statut:"À faire",key:"afaire",prio:"Moyenne",montant:"4 250 €",mt:"estimatif"},
+ {t:"Approbation des comptes annuels",d:"30",m:"juin",statut:"À faire",key:"afaire",prio:"Basse"}
+];
+const COL={"En retard":"red","À faire":"slate","À valider":"gold"};
+const PRIOC={Haute:"var(--red)",Moyenne:"var(--gold)",Basse:"var(--slate)"};
+const list=document.getElementById('list');
+function render(rows){
+ list.innerHTML=rows.map(e=>{
+  const c=COL[e.statut];
+  const chipDate=e.overdue?"var(--red)":(c==='gold'?"#8a6d12":(c==='slate'?"var(--navy-800)":"var(--navy-800)"));
+  const amt=e.montant?`<span class="amt-chip ${e.mt==='réel'?'reel':'estim'}">${e.montant} · ${e.mt}</span>`:"";
+  return `<div class="list-row ${e.overdue?'overdue':''}" data-key="${e.key}">
+    <div class="lr-left">
+      <div class="date-chip" style="background:${e.overdue?'rgba(214,69,69,.12)':'var(--surface-2)'}">
+        <span class="d" style="color:${chipDate}">${e.d}</span><span class="m">${e.m}</span></div>
+      <div>
+        <div class="lr-title">${e.t}${amt}</div>
+        <div class="lr-meta"><span class="prio-dot" style="background:${PRIOC[e.prio]}"></span> Priorité ${e.prio.toLowerCase()}${e.overdue?' · <b>en retard</b>':''}</div>
+      </div>
+    </div>
+    <div class="lr-right">
+      <span class="badge ${c}">${e.statut}</span>
+      <button class="btn-prep">Préparer</button>
+    </div>
+  </div>`;}).join('');
+}
+render(ECH);
+
+/* filtres */
+const empty=document.getElementById('empty');
+document.getElementById('filters').addEventListener('click',ev=>{
+ const b=ev.target.closest('.fbtn');if(!b)return;
+ document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ const f=b.dataset.f;const rows=f==='all'?ECH:ECH.filter(e=>e.key===f);
+ render(rows);empty.style.display=rows.length?'none':'block';
+ document.querySelectorAll('.list-row').forEach((r,i)=>{r.style.opacity='0';r.style.transform='translateY(10px)';setTimeout(()=>{r.style.transition='opacity .35s,transform .35s';r.style.opacity='1';r.style.transform='none';},i*45);});
+});
+
+/* count-up + reveal */
+function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1200;
+ (function s(n){const p=Math.min(1,(n-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e).toLocaleString('fr-FR')+suf;if(p<1)requestAnimationFrame(s);})(t0);}
+const seen=new WeakSet();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);
+ e.target.classList.add('in');e.target.querySelectorAll?.('[data-count]').forEach(countUp);}),{threshold:.2});
+document.querySelectorAll('.rise').forEach((c,i)=>{c.style.transitionDelay=(Math.min(i,6)*55)+'ms';io.observe(c);});
+{% endverbatim %}</script>
+</body>
+</html>
