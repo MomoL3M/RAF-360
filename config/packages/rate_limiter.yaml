@@ -10,3 +10,8 @@ framework:
             policy: 'sliding_window'
             limit: 30
             interval: '1 minute'
+        # Anti-abus de l'inscription (§16.1) — par IP.
+        registration:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '15 minutes'

@@ -41,6 +41,8 @@ security:
     # Seule la première règle correspondante s'applique.
     access_control:
         - { path: ^/app, roles: ROLE_USER }
+        # L'onboarding configure l'entreprise d'un utilisateur connecté (plus d'accès sans mot de passe).
+        - { path: ^/onboarding, roles: ROLE_USER }
 
 when@test:
     security:

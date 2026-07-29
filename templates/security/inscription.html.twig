@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte — RAF360{% endblock %}
+{% block meta_description %}Créez votre compte RAF360 pour piloter votre entreprise : trésorerie, échéances, documents et copilote IA.{% endblock %}
+
+{% block body %}
+    <main id="contenu">
+        <h1>Créer votre compte RAF360</h1>
+
+        {% if errors._global is defined %}
+            <p role="alert">{{ errors._global }}</p>
+        {% endif %}
+
+        <form method="post" action="{{ path('inscription') }}" novalidate>
+            <p>
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" name="prenom" value="{{ data.prenom }}" autocomplete="given-name" required
+                       {% if errors.prenom is defined %}aria-invalid="true" aria-describedby="err-prenom"{% endif %}>
+                {% if errors.prenom is defined %}<span id="err-prenom" role="alert">{{ errors.prenom }}</span>{% endif %}
+            </p>
+
+            <p>
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" name="nom" value="{{ data.nom }}" autocomplete="family-name" required
+                       {% if errors.nom is defined %}aria-invalid="true" aria-describedby="err-nom"{% endif %}>
+                {% if errors.nom is defined %}<span id="err-nom" role="alert">{{ errors.nom }}</span>{% endif %}
+            </p>
+
+            <p>
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" name="email" value="{{ data.email }}" autocomplete="email" required
+                       {% if errors.email is defined %}aria-invalid="true" aria-describedby="err-email"{% endif %}>
+                {% if errors.email is defined %}<span id="err-email" role="alert">{{ errors.email }}</span>{% endif %}
+            </p>
+
+            <p>
+                <label for="plainPassword">Mot de passe</label>
+                <input type="password" id="plainPassword" name="plainPassword" autocomplete="new-password" required
+                       minlength="12" aria-describedby="{{ errors.plainPassword is defined ? 'err-password' : 'hint-password' }}"
+                       {% if errors.plainPassword is defined %}aria-invalid="true"{% endif %}>
+                {% if errors.plainPassword is defined %}
+                    <span id="err-password" role="alert">{{ errors.plainPassword }}</span>
+                {% else %}
+                    <span id="hint-password">Au moins 12 caractères. Le collage est autorisé.</span>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="plainPasswordConfirm">Confirmer le mot de passe</label>
+                <input type="password" id="plainPasswordConfirm" name="plainPasswordConfirm" autocomplete="new-password" required
+                       {% if errors.plainPasswordConfirm is defined %}aria-invalid="true" aria-describedby="err-password-confirm"{% endif %}>
+                {% if errors.plainPasswordConfirm is defined %}<span id="err-password-confirm" role="alert">{{ errors.plainPasswordConfirm }}</span>{% endif %}
+            </p>
+
+            <input type="hidden" name="_token" value="{{ csrf_token('inscription') }}">
+
+            <button type="submit">Créer mon compte</button>
+        </form>
+
+        <p style="margin-top:18px">Déjà un compte ? <a href="{{ path('connexion') }}">Se connecter</a>.</p>
+    </main>
+{% endblock %}

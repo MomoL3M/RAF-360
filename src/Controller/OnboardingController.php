@@ -8,19 +8,17 @@ use App\Entity\Entreprise;
 use App\Entity\Utilisateur;
 use App\Enum\RegimeTva;
 use App\Repository\EntrepriseRepository;
-use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Onboarding en 3 étapes (SIREN → régime de TVA → activité & site).
- * À la fin : l'entreprise est enregistrée et un accès express (sans mot de passe)
- * ouvre l'espace /app. La sécurisation par identifiants viendra avec l'inscription.
+ * Réservé aux utilisateurs CONNECTÉS (cf. access_control ^/onboarding) : il configure
+ * l'entreprise du compte, il ne crée plus de compte. L'inscription (mot de passe) se fait
+ * en amont via /inscription (§16.1) — l'ancien accès express sans mot de passe est supprimé.
  */
 final class OnboardingController extends AbstractController
 {
@@ -28,11 +26,13 @@ final class OnboardingController extends AbstractController
     public function onboarding(
         Request $request,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $hasher,
-        Security $security,
         EntrepriseRepository $entreprises,
-        UtilisateurRepository $utilisateurs,
     ): Response {
+        $utilisateur = $this->getUser();
+        if (!$utilisateur instanceof Utilisateur) {
+            return $this->redirectToRoute('inscription');
+        }
+
         $data = ['siren' => '', 'regimeTva' => '', 'secteurActivite' => '', 'siteWeb' => ''];
         $errors = [];
 
@@ -57,7 +57,9 @@ final class OnboardingController extends AbstractController
             }
 
             if ([] === $errors) {
-                $entreprise = $entreprises->findOneBy(['siren' => $siren]) ?? new Entreprise();
+                $entreprise = $utilisateur->getEntreprise()
+                    ?? $entreprises->findOneBy(['siren' => $siren])
+                    ?? new Entreprise();
                 if (null === $entreprise->getId()) {
                     $entreprise->setRaisonSociale('Entreprise '.$siren);
                 }
@@ -67,21 +69,8 @@ final class OnboardingController extends AbstractController
                     ->setSiteWeb('' !== $site ? $site : null);
                 $em->persist($entreprise);
 
-                $email = 'espace-'.$siren.'@demo.raf360.fr';
-                $utilisateur = $utilisateurs->findOneBy(['email' => $email]);
-                if (!$utilisateur instanceof Utilisateur) {
-                    $utilisateur = new Utilisateur();
-                    $utilisateur->setEmail($email)
-                        ->setNom('Dirigeant')
-                        ->setPrenom('Démo')
-                        ->setRoles(['ROLE_USER'])
-                        ->setPassword($hasher->hashPassword($utilisateur, bin2hex(random_bytes(16))));
-                }
                 $utilisateur->setEntreprise($entreprise);
-                $em->persist($utilisateur);
                 $em->flush();
-
-                $security->login($utilisateur);
 
                 return $this->redirectToRoute('app_dashboard');
             }
