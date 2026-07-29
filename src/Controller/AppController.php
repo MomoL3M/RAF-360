@@ -29,4 +29,10 @@ final class AppController extends AbstractController
     {
         return $this->render('app/dashboard.html.twig');
     }
+
+    #[Route('/treasury', name: 'app_treasury', methods: ['GET'])]
+    public function treasury(): Response
+    {
+        return $this->render('app/treasury.html.twig');
+    }
 }
