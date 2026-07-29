@@ -1,0 +1,196 @@
+{# Écran /app « factures » — porté de la maquette premium (document autonome, isolé du CSS marketing). Données de démonstration. #}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factures — RAF360</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-400.woff2') }}') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+
+:root{
+  --paper:#eef1f7;--surface:#fff;--surface-2:#f7f9fc;
+  --navy-950:#081633;--navy-900:#0d1f4c;--navy-800:#14306b;--navy-700:#1d4487;
+  --gold:#c9a227;--gold-400:#e0b53d;--gold-050:#fbf4dd;
+  --green:#1f9d6b;--green-050:#e7f6ef;--red:#d64545;--red-050:#fceaea;
+  --blue:#2c6fb0;--blue-050:#e9f1fa;--blue-300:#8fbbee;
+  --ink:#0f1c34;--ink-soft:#33415c;--slate:#64748b;--hairline:#e5e9f2;
+  --sans:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+  --sh-sm:0 1px 2px rgba(13,31,76,.06),0 1px 3px rgba(13,31,76,.05);
+  --sh-md:0 6px 16px rgba(13,31,76,.08),0 2px 6px rgba(13,31,76,.05);
+  --sh-lg:0 24px 60px rgba(13,31,76,.16);
+  --r:18px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--sans);color:var(--ink);background:
+  radial-gradient(1200px 600px at 100% -5%,rgba(143,187,238,.18),transparent 55%),
+  radial-gradient(900px 500px at -10% 0%,rgba(224,181,61,.10),transparent 50%),var(--paper);
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--navy-900),var(--navy-950));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--gold-400),var(--gold));display:grid;place-items:center;color:var(--navy-950);font-family:var(--sans);font-weight:800;font-size:18px}
+.brand b{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand b i{color:var(--gold-400);font-style:normal}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;color:#c7d3ea;text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.nav a.on{background:linear-gradient(90deg,rgba(224,181,61,.18),rgba(224,181,61,.02));color:#fff;box-shadow:inset 2px 0 0 var(--gold-400)}
+.side .spacer{flex:1}
+.side .who{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.side .who .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--blue-300),var(--navy-700));display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff}
+.side .who small{display:block;color:#9fb1d4;font-size:11px}
+.side .who span{font-size:13px;font-weight:600}
+
+.main{padding:26px 30px 60px;min-width:0}
+.topline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.topline h1{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;color:var(--navy-900)}
+.topline p{color:var(--slate);font-size:14px;margin-top:4px}
+.demo-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-050);color:#8a6d12;border:1px solid #ecd9a0;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+
+.card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);box-shadow:var(--sh-sm);padding:20px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-h .lbl{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+
+.kpis{display:grid;gap:16px;margin-bottom:16px}
+.kpis.k3{grid-template-columns:repeat(3,1fr)}
+.kpis.k4{grid-template-columns:repeat(4,1fr)}
+.kpi .top{font-size:12px;color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.kpi .val{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;margin:7px 0 2px;line-height:1;font-variant-numeric:tabular-nums;color:var(--navy-900)}
+.kpi .val.red{color:var(--red)}.kpi .val.green{color:var(--green)}.kpi .val.gold{color:#8a6d12}
+.kpi .sub{font-size:12px;color:var(--slate)}
+
+.alert{position:relative;overflow:hidden;border-radius:22px;color:#eaf0fb;background:radial-gradient(700px 300px at 88% -20%,rgba(44,111,176,.26),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950));box-shadow:var(--sh-lg);padding:22px 24px;margin-bottom:16px}
+.alert.gold{background:radial-gradient(700px 300px at 88% -20%,rgba(224,181,61,.24),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950))}
+.a-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9fc7f2}
+.alert.gold .a-tag{color:#ffd98a}
+.a-tag .pulse{width:9px;height:9px;border-radius:50%;background:var(--blue-300);box-shadow:0 0 0 0 rgba(143,187,238,.7);animation:pulse 2.2s infinite}
+.alert.gold .a-tag .pulse{background:var(--gold-400);box-shadow:0 0 0 0 rgba(224,181,61,.7)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(143,187,238,.55)}70%{box-shadow:0 0 0 12px rgba(143,187,238,0)}100%{box-shadow:0 0 0 0 rgba(143,187,238,0)}}
+.alert h2{font-family:var(--sans);font-weight:800;font-size:20px;margin:11px 0 8px;color:#fff;letter-spacing:-.02em}
+.alert p{font-size:14px;line-height:1.6;color:#cbd7ee;max-width:74ch}
+.alert p b{color:#fff}
+.a-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:0;border-radius:11px;font:700 13px/1 var(--sans);padding:11px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold));color:var(--navy-950);box-shadow:0 8px 20px rgba(201,162,39,.32)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.btn-ghost:hover{background:rgba(255,255,255,.15)}
+.src{margin-top:12px;font-size:11.5px;color:#8ea1c6}
+
+.badge{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}
+.badge.navy{background:var(--blue-050);color:var(--navy-800)}
+.badge.green{background:var(--green-050);color:var(--green)}
+.badge.gold{background:var(--gold-050);color:#8a6d12}
+.badge.red{background:var(--red-050);color:var(--red)}
+.badge.slate{background:#eef1f7;color:var(--ink-soft)}
+
+.rise{opacity:0;transform:translateY(20px)}
+.rise.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.demo-badge{position:fixed;right:14px;bottom:14px;z-index:99;background:var(--navy-900);color:#fff;font:600 12px/1.4 var(--sans);padding:9px 13px;border-radius:10px;box-shadow:var(--sh-md);opacity:.92}
+
+@media(max-width:1080px){.kpis.k4{grid-template-columns:1fr 1fr}.kpis.k3{grid-template-columns:1fr}}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side .spacer,.side .who{display:none}.nav{flex-direction:row;flex-wrap:wrap}.main{padding:20px 16px 50px}.kpis.k4,.kpis.k3{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+
+</style>
+<style>
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.scen .s{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 15px}
+.scen .s h4{font-size:13px;color:#fff;margin-bottom:8px;font-weight:700}
+.scen .s .li{display:flex;gap:7px;font-size:12.5px;line-height:1.45;color:#c3d0e8;padding:2px 0}
+.scen .s .li.pro span:first-child{color:#6ee0ac}.scen .s .li.con span:first-child{color:#ffa2a2}
+.reco{margin-top:16px;background:rgba(224,181,61,.12);border:1px solid rgba(224,181,61,.3);border-radius:12px;padding:11px 14px;font-size:13.5px;color:#fff2d4}
+.reco b{color:var(--gold-400)}
+.efac{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.gauge{position:relative;width:118px;height:118px;flex-shrink:0}
+.gauge .pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.gauge .pct b{font-family:var(--sans);font-weight:800;font-size:26px;color:var(--navy-900);font-variant-numeric:tabular-nums}
+.gauge .pct small{display:block;font-size:11px;color:var(--slate)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">R</span><b>RAF<i>360</i></b></div>
+    <nav class="nav">
+      <a href="{{ path('app_dashboard') }}">Tableau de bord</a>
+      <a href="{{ path('app_treasury') }}">Trésorerie</a>
+      <a href="{{ path('app_calendar') }}">Échéances</a>
+      <a href="{{ path('app_documents') }}">Documents</a>
+      <a href="{{ path('app_factures') }}" class="on">◆ Factures</a>
+      <a href="{{ path('app_dataroom') }}">Data room</a>
+      <a href="{{ path('app_actions') }}">Actions</a>
+      <a href="{{ path('app_assistant') }}">Copilote IA</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topline">
+      <div>
+        <h1>Factures</h1>
+        <p>Capture, pré-imputation et préparation à la facturation électronique.</p>
+      </div>
+      <span class="demo-pill">● Données de démonstration</span>
+    </div>
+
+    <div class="kpis k3">
+      <div class="card kpi rise"><div class="top">À traiter</div><div class="val gold tnum"><span data-count="7">0</span></div><div class="sub">en attente de validation</div></div>
+      <div class="card kpi rise"><div class="top">Validées</div><div class="val green tnum"><span data-count="34">0</span></div><div class="sub">ce mois</div></div>
+      <div class="card kpi rise"><div class="top">Doublons détectés</div><div class="val red tnum"><span data-count="1">0</span></div><div class="sub">à confirmer</div></div>
+    </div>
+
+    <section class="alert gold rise">
+      <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
+      <h2>2 factures clients à relancer — retard de paiement probable</h2>
+      <p>BÉTA (<b>9 200 €</b>) et GAMMA (<b>6 480 €</b>) approchent de leur échéance avec un historique de paiement &gt; 45 j. Le copilote anticipe un impact sur le besoin en fonds de roulement de février.</p>
+      <div class="scen">
+        <div class="s"><h4>Relance amiable automatisée</h4>
+          <div class="li pro"><span>▲</span><span>Préserve la relation</span></div>
+          <div class="li pro"><span>▲</span><span>Rapide, sans coût</span></div>
+          <div class="li con"><span>▼</span><span>Effet incertain si retard structurel</span></div></div>
+        <div class="s"><h4>Escompte pour paiement anticipé</h4>
+          <div class="li pro"><span>▲</span><span>Accélère l'encaissement</span></div>
+          <div class="li pro"><span>▲</span><span>Sécurise le cash</span></div>
+          <div class="li con"><span>▼</span><span>Réduit la marge de ~1-2 %</span></div></div>
+      </div>
+      <div class="reco"><b>Recommandation :</b> relancer BÉTA aujourd'hui ; proposer un escompte à GAMMA si non payé au 25 février.</div>
+      <div class="a-cta"><button class="btn btn-gold">Lancer les relances</button></div>
+    </section>
+
+    <div class="card rise">
+      <div class="efac">
+        <div>
+          <div style="font-size:16px;font-weight:800;color:var(--navy-900);letter-spacing:-.02em">Préparation à la facturation électronique</div>
+          <div style="font-size:13.5px;color:var(--slate);margin-top:6px;max-width:60ch">RAF360 est un <b style="color:var(--ink)">outil de gestion compatible</b>, connecté à une plateforme partenaire. Réception des factures électroniques obligatoire au 1<sup>er</sup> sept. 2026 ; émission pour les TPE-PME au 1<sup>er</sup> sept. 2027.</div>
+        </div>
+        <div class="gauge" data-gauge="65" data-color="#2c6fb0">
+          <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#eef1f7" stroke-width="12"/><circle class="arc" cx="60" cy="60" r="52" fill="none" stroke="#2c6fb0" stroke-width="12" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
+          <div class="pct"><b class="tnum" data-count="65" data-suffix="%">0%</b><small>prêt</small></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="demo-badge">Maquette premium · données de démonstration</div>
+
+<script>{% verbatim %}
+function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1200;
+ (function s(n){const p=Math.min(1,(n-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e).toLocaleString('fr-FR')+suf;if(p<1)requestAnimationFrame(s);})(t0);}
+function gauge(el){const pct=+el.dataset.gauge,arc=el.querySelector('.arc'),C=2*Math.PI*52;
+ arc.style.strokeDasharray=C;arc.style.strokeDashoffset=C;
+ requestAnimationFrame(()=>{arc.style.transition='stroke-dashoffset 1.4s cubic-bezier(.22,.61,.36,1)';arc.style.strokeDashoffset=C*(1-pct/100);});}
+const seen=new WeakSet();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);e.target.classList.add('in');e.target.querySelectorAll?.('[data-count]').forEach(countUp);e.target.querySelectorAll?.('.gauge').forEach(gauge);}),{threshold:.2});
+document.querySelectorAll('.rise').forEach((c,i)=>{c.style.transitionDelay=(Math.min(i,6)*55)+'ms';io.observe(c);});
+{% endverbatim %}</script>
+</body>
+</html>

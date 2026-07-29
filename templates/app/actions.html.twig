@@ -1,0 +1,183 @@
+{# Écran /app « actions » — porté de la maquette premium (document autonome, isolé du CSS marketing). Données de démonstration. #}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actions — RAF360</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-400.woff2') }}') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+
+:root{
+  --paper:#eef1f7;--surface:#fff;--surface-2:#f7f9fc;
+  --navy-950:#081633;--navy-900:#0d1f4c;--navy-800:#14306b;--navy-700:#1d4487;
+  --gold:#c9a227;--gold-400:#e0b53d;--gold-050:#fbf4dd;
+  --green:#1f9d6b;--green-050:#e7f6ef;--red:#d64545;--red-050:#fceaea;
+  --blue:#2c6fb0;--blue-050:#e9f1fa;--blue-300:#8fbbee;
+  --ink:#0f1c34;--ink-soft:#33415c;--slate:#64748b;--hairline:#e5e9f2;
+  --sans:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+  --sh-sm:0 1px 2px rgba(13,31,76,.06),0 1px 3px rgba(13,31,76,.05);
+  --sh-md:0 6px 16px rgba(13,31,76,.08),0 2px 6px rgba(13,31,76,.05);
+  --sh-lg:0 24px 60px rgba(13,31,76,.16);
+  --r:18px;--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--sans);color:var(--ink);background:
+  radial-gradient(1200px 600px at 100% -5%,rgba(143,187,238,.18),transparent 55%),
+  radial-gradient(900px 500px at -10% 0%,rgba(224,181,61,.10),transparent 50%),var(--paper);
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--navy-900),var(--navy-950));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,var(--gold-400),var(--gold));display:grid;place-items:center;color:var(--navy-950);font-family:var(--sans);font-weight:800;font-size:18px}
+.brand b{font-family:var(--sans);font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand b i{color:var(--gold-400);font-style:normal}
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;color:#c7d3ea;text-decoration:none;font-size:14px;font-weight:500;transition:.2s}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff;transform:translateX(2px)}
+.nav a.on{background:linear-gradient(90deg,rgba(224,181,61,.18),rgba(224,181,61,.02));color:#fff;box-shadow:inset 2px 0 0 var(--gold-400)}
+.side .spacer{flex:1}
+.side .who{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.05)}
+.side .who .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(140deg,var(--blue-300),var(--navy-700));display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff}
+.side .who small{display:block;color:#9fb1d4;font-size:11px}
+.side .who span{font-size:13px;font-weight:600}
+
+.main{padding:26px 30px 60px;min-width:0}
+.topline{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.topline h1{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;color:var(--navy-900)}
+.topline p{color:var(--slate);font-size:14px;margin-top:4px}
+.demo-pill{display:inline-flex;align-items:center;gap:6px;background:var(--gold-050);color:#8a6d12;border:1px solid #ecd9a0;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+
+.card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);box-shadow:var(--sh-sm);padding:20px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.card-h .lbl{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--slate)}
+
+.kpis{display:grid;gap:16px;margin-bottom:16px}
+.kpis.k3{grid-template-columns:repeat(3,1fr)}
+.kpis.k4{grid-template-columns:repeat(4,1fr)}
+.kpi .top{font-size:12px;color:var(--slate);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.kpi .val{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em;margin:7px 0 2px;line-height:1;font-variant-numeric:tabular-nums;color:var(--navy-900)}
+.kpi .val.red{color:var(--red)}.kpi .val.green{color:var(--green)}.kpi .val.gold{color:#8a6d12}
+.kpi .sub{font-size:12px;color:var(--slate)}
+
+.alert{position:relative;overflow:hidden;border-radius:22px;color:#eaf0fb;background:radial-gradient(700px 300px at 88% -20%,rgba(44,111,176,.26),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950));box-shadow:var(--sh-lg);padding:22px 24px;margin-bottom:16px}
+.alert.gold{background:radial-gradient(700px 300px at 88% -20%,rgba(224,181,61,.24),transparent 60%),linear-gradient(150deg,var(--navy-800),var(--navy-950))}
+.a-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#9fc7f2}
+.alert.gold .a-tag{color:#ffd98a}
+.a-tag .pulse{width:9px;height:9px;border-radius:50%;background:var(--blue-300);box-shadow:0 0 0 0 rgba(143,187,238,.7);animation:pulse 2.2s infinite}
+.alert.gold .a-tag .pulse{background:var(--gold-400);box-shadow:0 0 0 0 rgba(224,181,61,.7)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(143,187,238,.55)}70%{box-shadow:0 0 0 12px rgba(143,187,238,0)}100%{box-shadow:0 0 0 0 rgba(143,187,238,0)}}
+.alert h2{font-family:var(--sans);font-weight:800;font-size:20px;margin:11px 0 8px;color:#fff;letter-spacing:-.02em}
+.alert p{font-size:14px;line-height:1.6;color:#cbd7ee;max-width:74ch}
+.alert p b{color:#fff}
+.a-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{border:0;border-radius:11px;font:700 13px/1 var(--sans);padding:11px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold));color:var(--navy-950);box-shadow:0 8px 20px rgba(201,162,39,.32)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.btn-ghost:hover{background:rgba(255,255,255,.15)}
+.src{margin-top:12px;font-size:11.5px;color:#8ea1c6}
+
+.badge{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}
+.badge.navy{background:var(--blue-050);color:var(--navy-800)}
+.badge.green{background:var(--green-050);color:var(--green)}
+.badge.gold{background:var(--gold-050);color:#8a6d12}
+.badge.red{background:var(--red-050);color:var(--red)}
+.badge.slate{background:#eef1f7;color:var(--ink-soft)}
+
+.rise{opacity:0;transform:translateY(20px)}
+.rise.in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.demo-badge{position:fixed;right:14px;bottom:14px;z-index:99;background:var(--navy-900);color:#fff;font:600 12px/1.4 var(--sans);padding:9px 13px;border-radius:10px;box-shadow:var(--sh-md);opacity:.92}
+
+@media(max-width:1080px){.kpis.k4{grid-template-columns:1fr 1fr}.kpis.k3{grid-template-columns:1fr}}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.side .spacer,.side .who{display:none}.nav{flex-direction:row;flex-wrap:wrap}.main{padding:20px 16px 50px}.kpis.k4,.kpis.k3{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rise{opacity:1;transform:none}}
+
+</style>
+<style>
+.arow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 18px;border:1px solid var(--hairline);border-radius:14px;background:var(--surface);box-shadow:var(--sh-sm);margin-bottom:12px;transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.arow:hover{transform:translateX(3px);box-shadow:var(--sh-md)}
+.arow .l{display:flex;align-items:center;gap:14px;min-width:0}
+.arow .stripe{width:4px;height:38px;border-radius:3px;flex-shrink:0}
+.arow .t{font-size:14.5px;color:var(--ink);font-weight:600}
+.arow .who{font-size:12px;color:var(--slate);margin-top:2px}
+.arow .r{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.btn-tr{border:1px solid var(--hairline);background:var(--surface);color:var(--navy-800);font:700 12.5px/1 var(--sans);padding:9px 13px;border-radius:10px;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-tr:hover{background:var(--navy-900);color:#fff;border-color:var(--navy-900)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><span class="logo">R</span><b>RAF<i>360</i></b></div>
+    <nav class="nav">
+      <a href="{{ path('app_dashboard') }}">Tableau de bord</a>
+      <a href="{{ path('app_treasury') }}">Trésorerie</a>
+      <a href="{{ path('app_calendar') }}">Échéances</a>
+      <a href="{{ path('app_documents') }}">Documents</a>
+      <a href="{{ path('app_factures') }}">Factures</a>
+      <a href="{{ path('app_dataroom') }}">Data room</a>
+      <a href="{{ path('app_actions') }}" class="on">◆ Actions</a>
+      <a href="{{ path('app_assistant') }}">Copilote IA</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topline">
+      <div>
+        <h1>Centre d'actions</h1>
+        <p>Une vue unique de tout ce qui requiert votre attention — priorisé par le copilote.</p>
+      </div>
+      <span class="demo-pill">● Données de démonstration</span>
+    </div>
+
+    <div class="kpis k3">
+      <div class="card kpi rise"><div class="top">À traiter</div><div class="val tnum"><span data-count="4">0</span></div><div class="sub">actions ouvertes</div></div>
+      <div class="card kpi rise"><div class="top">Risque élevé</div><div class="val red tnum"><span data-count="1">0</span></div><div class="sub">à sécuriser en priorité</div></div>
+      <div class="card kpi rise"><div class="top">Escalade professionnel</div><div class="val tnum"><span data-count="1">0</span></div><div class="sub">orientée avocat</div></div>
+    </div>
+
+    <section class="alert gold rise">
+      <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
+      <h2>2 actions peuvent en éviter 4 autres</h2>
+      <p>Traiter le <b>doublon fournisseur ACME</b> et les <b>3 pièces TVA manquantes</b> avant le 12 février sécurise la déclaration et évite une régularisation. Le copilote a déjà préparé les brouillons.</p>
+      <div class="a-cta"><button class="btn btn-gold">Préparer la TVA</button><button class="btn btn-ghost">Voir le doublon</button></div>
+    </section>
+
+    <div id="acts"></div>
+  </main>
+</div>
+<div class="demo-badge">Maquette premium · données de démonstration</div>
+
+<script>{% verbatim %}
+const COL={risque:'#d64545',confirmer:'#c9a227',escalade:'#14306b',attente:'#64748b'};
+const CLS={risque:'red',confirmer:'gold',escalade:'navy',attente:'slate'};
+const LAB={risque:'Risque élevé',confirmer:'À confirmer',escalade:'Escalade avocat',attente:'En attente'};
+const ACTS=[
+ {t:'3 pièces manquantes pour la clôture TVA',statut:'risque',who:'Vous'},
+ {t:'Facture fournisseur ACME en doublon détecté',statut:'confirmer',who:'Compta'},
+ {t:'Contrat client BÉTA : clause de responsabilité à revoir',statut:'escalade',who:'Avocat'},
+ {t:'Rapprochement bancaire de janvier à valider',statut:'attente',who:'DAF'}
+];
+document.getElementById('acts').innerHTML=ACTS.map(a=>`
+ <div class="arow rise">
+   <div class="l"><span class="stripe" style="background:${COL[a.statut]}"></span>
+     <div><div class="t">${a.t}</div><div class="who">Assigné : ${a.who}</div></div></div>
+   <div class="r"><span class="badge ${CLS[a.statut]}">${LAB[a.statut]}</span><button class="btn-tr">Traiter</button></div>
+ </div>`).join('');
+function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1200;
+ (function s(n){const p=Math.min(1,(n-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e).toLocaleString('fr-FR')+suf;if(p<1)requestAnimationFrame(s);})(t0);}
+const seen=new WeakSet();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);e.target.classList.add('in');e.target.querySelectorAll?.('[data-count]').forEach(countUp);}),{threshold:.2});
+document.querySelectorAll('.rise').forEach((c,i)=>{c.style.transitionDelay=(Math.min(i,6)*50)+'ms';io.observe(c);});
+{% endverbatim %}</script>
+</body>
+</html>

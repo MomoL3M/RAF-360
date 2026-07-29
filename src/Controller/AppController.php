@@ -41,4 +41,34 @@ final class AppController extends AbstractController
     {
         return $this->render('app/echeances.html.twig');
     }
+
+    #[Route('/documents', name: 'app_documents', methods: ['GET'])]
+    public function documents(): Response
+    {
+        return $this->render('app/documents.html.twig');
+    }
+
+    #[Route('/factures', name: 'app_factures', methods: ['GET'])]
+    public function factures(): Response
+    {
+        return $this->render('app/factures.html.twig');
+    }
+
+    #[Route('/dataroom', name: 'app_dataroom', methods: ['GET'])]
+    public function dataroom(): Response
+    {
+        return $this->render('app/dataroom.html.twig');
+    }
+
+    #[Route('/actions', name: 'app_actions', methods: ['GET'])]
+    public function actions(): Response
+    {
+        return $this->render('app/actions.html.twig');
+    }
+
+    #[Route('/assistant', name: 'app_assistant', methods: ['GET'])]
+    public function assistant(): Response
+    {
+        return $this->render('app/assistant.html.twig');
+    }
 }
