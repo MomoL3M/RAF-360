@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Démarrer — RAF360</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-400.woff2') }}') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-500.woff2') }}') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-600.woff2') }}') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Inter';src:url('{{ asset('fonts/inter-700.woff2') }}') format('woff2');font-weight:700;font-display:swap}
+:root{
+  --paper:#eef1f7;--surface:#fff;--surface-2:#f7f9fc;--navy-950:#081633;--navy-900:#0d1f4c;--navy-800:#14306b;--navy-700:#1d4487;
+  --gold:#c9a227;--gold-400:#e0b53d;--gold-050:#fbf4dd;--green:#1f9d6b;--red:#d64545;--red-050:#fceaea;--blue:#2c6fb0;--blue-050:#e9f1fa;--blue-300:#8fbbee;
+  --ink:#0f1c34;--ink-soft:#33415c;--slate:#64748b;--hairline:#e5e9f2;--sans:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+  --sh-md:0 6px 16px rgba(13,31,76,.08);--sh-lg:0 24px 60px rgba(13,31,76,.16);--ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--sans);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  background:radial-gradient(1000px 500px at 100% -10%,rgba(143,187,238,.20),transparent 55%),radial-gradient(800px 460px at -10% 0%,rgba(224,181,61,.12),transparent 50%),var(--paper);
+  -webkit-font-smoothing:antialiased;padding:34px 18px 60px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+.top .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(140deg,var(--gold-400),var(--gold));display:grid;place-items:center;color:var(--navy-950);font-weight:800;font-size:19px}
+.top b{font-weight:800;font-size:20px;letter-spacing:-.02em}.top b i{color:var(--gold);font-style:normal}
+.wizard{width:100%;max-width:560px}
+.prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.prog-head .st{font-weight:800;font-size:13px;color:var(--navy-900);letter-spacing:.3px}
+.prog-head .lb{font-size:13px;color:var(--slate)}
+.bar{height:7px;border-radius:999px;background:#dde4f0;overflow:hidden}
+.bar i{display:block;height:100%;width:33%;border-radius:999px;background:linear-gradient(90deg,var(--gold-400),var(--gold));transition:width .5s var(--ease)}
+.card{background:var(--surface);border:1px solid var(--hairline);border-radius:20px;box-shadow:var(--sh-lg);padding:30px;margin-top:20px}
+h1{font-weight:800;font-size:23px;letter-spacing:-.02em;color:var(--navy-900);margin-bottom:6px}
+.sub{color:var(--slate);font-size:14px;margin-bottom:22px;line-height:1.5}
+.js .step{display:none}.js .step.active{display:block;animation:fade .4s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.field{width:100%;border:1px solid var(--hairline);border-radius:12px;padding:14px 15px;font:600 16px/1.2 var(--sans);color:var(--ink);outline:none;transition:.2s;font-variant-numeric:tabular-nums}
+.field:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(44,111,176,.12)}
+.field.siren{letter-spacing:3px;font-size:22px;text-align:center}
+.lbl{display:block;font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:7px}
+.hint{font-size:12.5px;color:var(--slate);margin-top:8px}
+.err{color:var(--red);font-size:12.5px;margin-top:7px;min-height:1px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:13px;border:1.5px solid var(--hairline);border-radius:14px;padding:15px 16px;cursor:pointer;transition:.18s;background:var(--surface)}
+.opt:hover{border-color:var(--blue-300)}
+.opt.sel{border-color:var(--navy-800);background:var(--blue-050);box-shadow:0 0 0 3px rgba(20,48,107,.08)}
+.opt .rad{width:20px;height:20px;border-radius:50%;border:2px solid #c3ccdd;flex-shrink:0;display:grid;place-items:center;transition:.18s}
+.opt.sel .rad{border-color:var(--navy-800)}
+.opt.sel .rad::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--navy-800)}
+.opt .t{font-weight:700;font-size:14.5px;color:var(--navy-900)}
+.opt .d{font-size:12.5px;color:var(--slate);margin-top:2px}
+.row{margin-bottom:16px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:26px}
+.btn{border:0;border-radius:12px;font:800 14px/1 var(--sans);padding:14px 20px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s,opacity .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold));color:var(--navy-950);box-shadow:0 8px 20px rgba(201,162,39,.32)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:var(--surface-2);color:var(--navy-800);border:1px solid var(--hairline)}
+.btn-ghost:hover{background:#eef1f7}
+.btn[hidden]{display:none}
+.alert-err{background:var(--red-050);border:1px solid var(--red);color:var(--red);border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:18px}
+.foot{margin-top:20px;text-align:center;font-size:12.5px;color:var(--slate)}
+.foot a{color:var(--blue)}
+.trust{margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;color:var(--slate);font-size:12.5px}
+.trust span{display:inline-flex;align-items:center;gap:6px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="top"><span class="logo">R</span><b>RAF<i>360</i></b></div>
+
+  <form class="wizard" method="post" action="{{ path('onboarding') }}" novalidate>
+    <input type="hidden" name="_token" value="{{ csrf_token('onboarding') }}">
+    <input type="hidden" name="regimeTva" id="regimeTva" value="{{ data.regimeTva }}">
+
+    <div class="prog-head"><span class="st" id="stepLabel">Étape 1/3</span><span class="lb" id="stepName">Identification</span></div>
+    <div class="bar"><i id="progbar"></i></div>
+
+    <div class="card">
+      {% if errors._global is defined %}<div class="alert-err">{{ errors._global }}</div>{% endif %}
+
+      {# ---- Étape 1 : SIREN ---- #}
+      <section class="step active" data-step="1">
+        <h1>Quel est le SIREN de votre entreprise ?</h1>
+        <p class="sub">9 chiffres — nous préparons votre espace à partir de votre profil (aucune création de mot de passe).</p>
+        <label class="lbl" for="siren">Numéro de SIREN</label>
+        <input class="field siren" id="siren" name="siren" inputmode="numeric" maxlength="11" placeholder="123 456 789" value="{{ data.siren }}" autocomplete="off">
+        <div class="err" id="err-siren">{{ errors.siren ?? '' }}</div>
+        <div class="hint">Il figure sur votre extrait Kbis ou vos factures. Exemple : 817 946 114.</div>
+      </section>
+
+      {# ---- Étape 2 : Régime de TVA ---- #}
+      <section class="step" data-step="2">
+        <h1>Quel est votre régime de TVA ?</h1>
+        <p class="sub">Cela permet d'adapter vos échéances et vos déclarations.</p>
+        <div class="opts" id="tvaOpts">
+          {% set regimes = [
+            {v:'franchise_base', t:'Franchise en base', d:'Pas de TVA facturée (petits seuils de chiffre d\'affaires).'},
+            {v:'reel_simplifie', t:'Réel simplifié', d:'Acomptes semestriels et régularisation annuelle (CA12).'},
+            {v:'reel_normal', t:'Réel normal', d:'Déclaration mensuelle ou trimestrielle (CA3).'},
+            {v:'indetermine', t:'Je ne sais pas encore', d:'Le copilote vous aidera à le déterminer.'}
+          ] %}
+          {% for r in regimes %}
+            <div class="opt {{ data.regimeTva == r.v ? 'sel' : '' }}" data-v="{{ r.v }}" role="button" tabindex="0">
+              <span class="rad"></span><div><div class="t">{{ r.t }}</div><div class="d">{{ r.d }}</div></div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="err" id="err-regimeTva">{{ errors.regimeTva ?? '' }}</div>
+      </section>
+
+      {# ---- Étape 3 : Activité & site ---- #}
+      <section class="step" data-step="3">
+        <h1>Votre activité et votre site</h1>
+        <p class="sub">Le copilote adapte les modules, obligations et recommandations à votre secteur. Ces champs sont facultatifs.</p>
+        <div class="row">
+          <label class="lbl" for="secteurActivite">Type d'activité</label>
+          <input class="field" id="secteurActivite" name="secteurActivite" placeholder="ex. commerce, BTP, services, SaaS…" value="{{ data.secteurActivite }}">
+        </div>
+        <div class="row">
+          <label class="lbl" for="siteWeb">Site internet de l'entreprise</label>
+          <input class="field" id="siteWeb" name="siteWeb" placeholder="ex. mon-entreprise.fr" value="{{ data.siteWeb }}" autocomplete="url">
+        </div>
+        <div class="trust">
+          <span>🔒 Hébergement UE</span><span>✓ Sans engagement</span><span>✓ Sources officielles</span>
+        </div>
+      </section>
+
+      <div class="nav">
+        <button type="button" class="btn btn-ghost" id="back" hidden>← Retour</button>
+        <span style="flex:1"></span>
+        <button type="button" class="btn btn-gold" id="next">Continuer →</button>
+        <button type="submit" class="btn btn-gold" id="submit" hidden>Accéder à mon espace →</button>
+      </div>
+    </div>
+
+    <div class="foot">Déjà un espace ? <a href="{{ path('connexion') }}">Se connecter</a></div>
+  </form>
+
+<script>
+const NAMES={1:'Identification',2:'Régime de TVA',3:'Activité'};
+let step=1;
+const steps=[...document.querySelectorAll('.step')];
+const bar=document.getElementById('progbar'),lab=document.getElementById('stepLabel'),nm=document.getElementById('stepName');
+const back=document.getElementById('back'),next=document.getElementById('next'),submit=document.getElementById('submit');
+function show(){
+ steps.forEach(s=>s.classList.toggle('active',+s.dataset.step===step));
+ bar.style.width=(step*100/3)+'%';lab.textContent='Étape '+step+'/3';nm.textContent=NAMES[step];
+ back.hidden=step===1;next.hidden=step===3;submit.hidden=step!==3;
+}
+function validate(){
+ if(step===1){const v=document.getElementById('siren').value.replace(/\D/g,'');
+   if(v.length!==9){document.getElementById('err-siren').textContent='Le SIREN doit comporter 9 chiffres.';return false;}
+   document.getElementById('err-siren').textContent='';return true;}
+ if(step===2){if(!document.getElementById('regimeTva').value){document.getElementById('err-regimeTva').textContent='Sélectionnez votre régime de TVA.';return false;}
+   document.getElementById('err-regimeTva').textContent='';return true;}
+ return true;
+}
+next.addEventListener('click',()=>{if(validate()&&step<3){step++;show();}});
+back.addEventListener('click',()=>{if(step>1){step--;show();}});
+// SIREN : formatage léger (groupes de 3) + effacement erreur
+const siren=document.getElementById('siren');
+siren.addEventListener('input',()=>{let d=siren.value.replace(/\D/g,'').slice(0,9);siren.value=d.replace(/(\d{3})(?=\d)/g,'$1 ').trim();if(d.length===9)document.getElementById('err-siren').textContent='';});
+// TVA : sélection de carte
+document.querySelectorAll('#tvaOpts .opt').forEach(o=>{
+ const pick=()=>{document.querySelectorAll('#tvaOpts .opt').forEach(x=>x.classList.remove('sel'));o.classList.add('sel');document.getElementById('regimeTva').value=o.dataset.v;document.getElementById('err-regimeTva').textContent='';};
+ o.addEventListener('click',pick);o.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});
+});
+show();
+</script>
+</body>
+</html>
