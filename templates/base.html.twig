@@ -9,12 +9,17 @@
         <title>{% block title %}RAF360 — Le copilote financier des TPE et PME{% endblock %}</title>
         <meta name="description" content="{% block meta_description %}RAF360 centralise le pilotage financier, comptable, fiscal, social et juridique des TPE et PME : collecte et contrôle des documents, suivi des échéances, trésorerie éclairée, et orientation vers le bon professionnel habilité.{% endblock %}">
 
+        {# URL canonique : host + chemin, sans query string (§9.1). Surchargeable par page. #}
+        <link rel="canonical" href="{% block canonical %}{{ app.request.schemeAndHttpHost ~ app.request.pathInfo }}{% endblock %}">
+
         {% block opengraph %}
             <meta property="og:site_name" content="RAF360">
             <meta property="og:locale" content="fr_FR">
             <meta property="og:type" content="{% block og_type %}website{% endblock %}">
             <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
             <meta property="og:description" content="{% block og_description %}{{ block('meta_description') }}{% endblock %}">
+            <meta property="og:url" content="{{ app.request.schemeAndHttpHost ~ app.request.pathInfo }}">
+            <meta property="og:image" content="{% block og_image %}{{ absolute_url(asset('raf360-logo.png')) }}{% endblock %}">
         {% endblock %}
 
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">

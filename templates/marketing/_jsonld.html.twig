@@ -1,0 +1,29 @@
+{#
+  Données structurées Organization (§9.1 / §9.4 GEO).
+  Uniquement des données RÉELLES validées (§2.10) : éditeur Lindbergh Formation SAS.
+  email/réseaux sociaux non fournis (TODO-PM) → volontairement absents.
+#}
+{% set org = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'RAF360',
+    'legalName': 'Lindbergh Formation SAS',
+    'url': url('accueil'),
+    'logo': absolute_url(asset('raf360-logo.png')),
+    'description': "Poste de pilotage financier, comptable, fiscal, social et juridique des TPE et PME. RAF360 centralise les documents, suit les échéances et éclaire la trésorerie ; une IA à garde-fous prépare et oriente vers le bon professionnel habilité.",
+    'telephone': '+33187662097',
+    'address': {
+        '@type': 'PostalAddress',
+        'streetAddress': '16 rue de Maillé',
+        'postalCode': '91310',
+        'addressLocality': 'Montlhéry',
+        'addressCountry': 'FR'
+    },
+    'identifier': {
+        '@type': 'PropertyValue',
+        'propertyID': 'SIRET',
+        'value': '81794611400029'
+    }
+} %}
+{# json_encode échappe les slashes (dont "<\/script>") → sûr en inline (§2.1). #}
+<script type="application/ld+json">{{ org|json_encode|raw }}</script>

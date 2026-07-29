@@ -1,0 +1,15 @@
+{# Bandeau de consentement cookies (§17.1). Masqué tant que JS n'a pas statué ;
+   sans JS aucun traceur ne se charge, donc rien à consentir. #}
+<div class="consent" data-controller="consent" role="region" aria-label="Gestion des cookies" hidden>
+    <div class="consent__inner">
+        <p class="consent__text">
+            Nous déposons uniquement les cookies nécessaires au fonctionnement du site.
+            Aucun outil de mesure d'audience ni de marketing n'est activé sans votre accord.
+            <a href="{{ path('rgpd') }}">En savoir plus</a>.
+        </p>
+        <div class="consent__actions">
+            <button type="button" class="consent__btn" data-action="consent#refuse">Tout refuser</button>
+            <button type="button" class="consent__btn consent__btn--accept" data-action="consent#accept">Tout accepter</button>
+        </div>
+    </div>
+</div>

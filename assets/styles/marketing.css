@@ -975,3 +975,88 @@
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* --- Bandeau de consentement cookies (§17.1) --- */
+.consent {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -8px 30px rgba(16, 27, 58, 0.12);
+  padding: 16px;
+}
+.consent[hidden] {
+  display: none;
+}
+.consent__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 28px;
+}
+.consent__text {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.consent__text a {
+  color: var(--navy);
+  text-decoration: underline;
+}
+.consent__actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+/* « Refuser » et « Accepter » : même taille, même visibilité (exigence CNIL). */
+.consent__btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 132px;
+  padding: 11px 20px;
+  border: 1.5px solid var(--navy);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+}
+.consent__btn:hover {
+  background: var(--paper-3);
+}
+.consent__btn--accept {
+  background: var(--navy);
+  color: #fff;
+}
+.consent__btn--accept:hover {
+  background: var(--navy-600);
+}
+.consent__btn:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.consent-reopen {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+@media (max-width: 640px) {
+  .consent__actions {
+    width: 100%;
+  }
+  .consent__btn {
+    flex: 1;
+  }
+}

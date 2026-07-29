@@ -1,0 +1,27 @@
+# RAF360
+
+> Le poste de pilotage financier, comptable, fiscal, social et juridique des TPE et PME françaises, quel que soit leur secteur. RAF360 centralise les documents, suit les échéances, éclaire la trésorerie et prépare les obligations ; une IA à garde-fous alerte et prépare, et oriente chaque sujet réglementé vers le bon professionnel habilité. Édité par Lindbergh Formation SAS (Montlhéry, France).
+
+RAF360 est un logiciel (SaaS). Il ne remplace ni l'expert-comptable ni l'avocat : il prépare et oriente. Chaque recommandation de l'IA affiche sa source officielle, sa date et un score de confiance ; au-delà d'un seuil, l'escalade vers un professionnel est requise. RAF360 est un outil de gestion compatible facturation électronique (connecté à une plateforme partenaire agréée) — ce n'est pas lui-même une plateforme agréée.
+
+## Pages principales
+
+- [Produit](https://raf360.fr/produit) : les modules — copilote IA, trésorerie, échéances, coffre-fort documentaire, e-facture, data room.
+- [Solutions](https://raf360.fr/solutions) : par profil — TPE, PME, experts-comptables et avocats.
+- [Tarifs](https://raf360.fr/tarifs) : quatre offres, de 39 à 899 € HT/mois (Starter, Pilot TPE, RAF PME, RAF ETI).
+- [À propos](https://raf360.fr/a-propos) : mission, valeurs et fonctionnement.
+- [Blog](https://raf360.fr/blog) : ressources sur l'e-facturation, la trésorerie et les obligations des TPE-PME.
+- [Contact](https://raf360.fr/contact) : demande de démonstration ou de rappel.
+- [Diagnostic gratuit](https://raf360.fr/diagnostic) : aperçu de préparation à partir du numéro SIREN.
+
+## Repères
+
+- Cible : dirigeants de TPE (1-10 salariés) et PME (11-49 salariés), tous secteurs ; ETI en vente assistée.
+- Domaines couverts : financier, comptable, fiscal, social, juridique.
+- Calendrier e-facturation : réception obligatoire au 1er septembre 2026 ; émission pour les TPE-PME au 1er septembre 2027.
+- Hébergement des données dans l'Union européenne ; conformité RGPD ; droits d'accès par rôle.
+
+## Mentions
+
+- Éditeur : Lindbergh Formation SAS — 16 rue de Maillé, 91310 Montlhéry, France — SIRET 817 946 114 00029.
+- [Mentions légales](https://raf360.fr/mentions-legales) · [Confidentialité](https://raf360.fr/politique-de-confidentialite) · [RGPD](https://raf360.fr/rgpd)

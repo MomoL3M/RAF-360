@@ -1,0 +1,25 @@
+# robots.txt — RAF360 (édité par Lindbergh Formation SAS)
+# Espace applicatif /app, connexion et onboarding : sans valeur SEO (§9.1) → non explorés.
+# Les moteurs de recherche ET les moteurs de réponse IA sont autorisés sur les pages publiques.
+
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /connexion
+Disallow: /onboarding
+
+# --- Moteurs de réponse IA : explicitement AUTORISÉS (GEO, §9.4) ---
+# Mêmes règles que le groupe générique : pages publiques oui, espace privé non.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Bingbot
+Allow: /
+Disallow: /app
+Disallow: /connexion
+Disallow: /onboarding
+
+Sitemap: https://raf360.fr/sitemap.xml
