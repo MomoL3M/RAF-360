@@ -34,7 +34,7 @@ jobs:
       DATABASE_URL: "postgresql://app:app@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Configurer PHP 8.4
         uses: shivammathur/setup-php@v2
