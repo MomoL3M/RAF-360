@@ -1,0 +1,30 @@
+{% extends 'marketing/base_marketing.html.twig' %}
+
+{% block title %}Page introuvable — RAF360{% endblock %}
+{% block meta_description %}Cette page n'existe pas ou a été déplacée. Retrouvez le produit, les tarifs et le diagnostic gratuit RAF360.{% endblock %}
+
+{% block marketing %}
+    <section class="page-hero">
+        <div class="container" style="max-width:760px">
+            <span class="eyebrow">Erreur 404</span>
+            <h1 class="display" style="margin:16px 0 18px">Cette page n'existe pas ou a été déplacée</h1>
+            <p class="lead" style="margin-bottom:30px">
+                Le lien que vous avez suivi est peut-être obsolète. Voici les chemins les plus utiles pour reprendre votre visite.
+            </p>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px">
+                <a class="m-btn m-btn-gold" href="{{ path('accueil') }}">Retour à l'accueil</a>
+                <a class="m-btn m-btn-ghost" href="{{ path('diagnostic') }}">Démarrer le diagnostic</a>
+            </div>
+
+            <h2 class="h2" style="font-size:20px;margin-bottom:14px">Pages principales</h2>
+            <ul style="line-height:2;padding-left:20px">
+                <li><a href="{{ path('produit') }}">Le produit et ses modules</a></li>
+                <li><a href="{{ path('solutions') }}">Les solutions par profil (TPE, PME, experts-comptables)</a></li>
+                <li><a href="{{ path('tarifs') }}">Les tarifs et le comparatif des offres</a></li>
+                <li><a href="{{ path('blog') }}">Les ressources et repères réglementaires</a></li>
+                <li><a href="{{ path('contact') }}">Contacter l'équipe</a></li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}

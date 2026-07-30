@@ -43,19 +43,26 @@ final class ClientErrorController extends AbstractController
         }
 
         $logger->error('Erreur JavaScript front', [
-            'message' => $this->clip($payload['message'] ?? ''),
-            'source' => $this->clip($payload['source'] ?? ''),
-            'stack' => $this->clip($payload['stack'] ?? '', 1500),
-            'url' => $this->clip($payload['url'] ?? ''),
-            'ua' => $this->clip($request->headers->get('User-Agent') ?? ''),
+            'message' => $this->champ($payload, 'message'),
+            'source' => $this->champ($payload, 'source'),
+            'stack' => $this->champ($payload, 'stack', 1500),
+            'url' => $this->champ($payload, 'url'),
+            'ua' => mb_substr($request->headers->get('User-Agent') ?? '', 0, self::MAX_LEN),
         ]);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    /** Tronque et normalise une valeur reçue du client (jamais réutilisée dans une réponse). */
-    private function clip(mixed $value, int $max = self::MAX_LEN): string
+    /**
+     * Lit un champ du corps JSON, le normalise en chaîne et le tronque.
+     * Une valeur non scalaire (objet, tableau) est ignorée : rien n'est renvoyé au client.
+     *
+     * @param array<string, mixed> $payload corps JSON décodé (contenu non fiable, donc hétérogène)
+     */
+    private function champ(array $payload, string $cle, int $max = self::MAX_LEN): string
     {
-        return mb_substr(\is_scalar($value) ? (string) $value : '', 0, $max);
+        $valeur = $payload[$cle] ?? '';
+
+        return mb_substr(\is_scalar($valeur) ? (string) $valeur : '', 0, $max);
     }
 }

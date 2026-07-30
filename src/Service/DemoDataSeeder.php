@@ -22,8 +22,15 @@ use App\Enum\StatutEcheance;
 use App\Enum\StatutEncaissement;
 use App\Enum\StatutFacture;
 use App\Enum\TypeMontant;
+use App\Repository\ActionRepository;
+use App\Repository\AlerteEncaissementRepository;
+use App\Repository\DocumentRepository;
+use App\Repository\EcheanceRepository;
 use App\Repository\EntrepriseRepository;
+use App\Repository\FactureRepository;
+use App\Repository\FluxTresorerieRepository;
 use App\Repository\ProfessionnelRepository;
+use App\Repository\RendezVousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -43,6 +50,13 @@ final readonly class DemoDataSeeder
         private EntityManagerInterface $em,
         private EntrepriseRepository $entreprises,
         private ProfessionnelRepository $professionnels,
+        private EcheanceRepository $echeances,
+        private FactureRepository $factures,
+        private DocumentRepository $documents,
+        private ActionRepository $actions,
+        private FluxTresorerieRepository $flux,
+        private AlerteEncaissementRepository $alertes,
+        private RendezVousRepository $rendezVous,
     ) {
     }
 
@@ -82,12 +96,14 @@ final readonly class DemoDataSeeder
     private function purger(Entreprise $entreprise): void
     {
         // Les rendez-vous d'abord (ils référencent le catalogue de professionnels).
-        $classes = [RendezVous::class, Echeance::class, Facture::class, Document::class, Action::class, FluxTresorerie::class, AlerteEncaissement::class];
-        foreach ($classes as $classe) {
-            $this->em->createQuery(\sprintf('DELETE FROM %s e WHERE e.entreprise = :ent', $classe))
-                ->setParameter('ent', $entreprise)
-                ->execute();
-        }
+        // Chaque suppression vit dans le repository de son entité (§14.1).
+        $this->rendezVous->deleteForEntreprise($entreprise);
+        $this->echeances->deleteForEntreprise($entreprise);
+        $this->factures->deleteForEntreprise($entreprise);
+        $this->documents->deleteForEntreprise($entreprise);
+        $this->actions->deleteForEntreprise($entreprise);
+        $this->flux->deleteForEntreprise($entreprise);
+        $this->alertes->deleteForEntreprise($entreprise);
     }
 
     private function semerEcheances(Entreprise $entreprise): void

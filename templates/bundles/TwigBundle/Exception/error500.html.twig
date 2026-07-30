@@ -1,0 +1,37 @@
+{# Page 500 : document AUTONOME, sans layout ni requête de base — une erreur serveur ne
+   doit jamais dépendre de ce qui vient peut-être de tomber (§5.6, §14.4). Aucun détail
+   technique n'est exposé : la trace part dans les logs. #}
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service momentanément indisponible — RAF360</title>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+       background:#f4f7fc;color:#101b3a;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .box{max-width:560px;background:#fff;border:1px solid #dce4f2;border-radius:16px;
+       padding:34px 32px;box-shadow:0 6px 24px rgba(16,27,58,.08)}
+  .mark{font-weight:800;font-size:19px;letter-spacing:-.02em;color:#14306b;margin-bottom:20px}
+  .mark i{color:#eda323;font-style:normal}
+  h1{font-size:23px;line-height:1.3;margin:0 0 14px;letter-spacing:-.02em}
+  p{margin:0 0 14px;font-size:15px;line-height:1.65;color:#33406a}
+  a.btn{display:inline-block;margin-top:10px;background:#14306b;color:#fff;
+        text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px}
+  a.btn:focus-visible{outline:3px solid #eda323;outline-offset:2px}
+  .tel{font-size:13.5px;color:#64708f;margin-top:18px}
+  .tel a{color:#14306b}
+</style>
+</head>
+<body>
+  <main class="box">
+    <div class="mark">RAF<i>360</i></div>
+    <h1>Le service est momentanément indisponible</h1>
+    <p>Une erreur technique nous empêche d'afficher cette page. Elle a été enregistrée et notre équipe en est informée.</p>
+    <p>Vos données ne sont pas affectées. Merci de réessayer dans quelques instants.</p>
+    <a class="btn" href="/">Retour à l'accueil</a>
+    <p class="tel">Besoin d'une réponse rapide ? <a href="tel:+33187662097">+33 1 87 66 20 97</a></p>
+  </main>
+</body>
+</html>

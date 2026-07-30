@@ -50,4 +50,18 @@ final class AlerteEncaissementRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Supprime toutes les lignes rattachées à une entreprise.
+     * Le DQL vit ici et nulle part ailleurs (§14.1) ; utilisé par le peuplement de démonstration.
+     */
+    public function deleteForEntreprise(Entreprise $entreprise): void
+    {
+        $this->createQueryBuilder('a')
+            ->delete()
+            ->andWhere('a.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->getQuery()
+            ->execute();
+    }
 }
