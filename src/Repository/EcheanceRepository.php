@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Echeance;
+use App\Entity\Entreprise;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,6 +32,22 @@ final class EcheanceRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->orderBy('e.dateEcheance', 'ASC')
             ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Toutes les échéances d'une entreprise, de la plus proche à la plus lointaine.
+     * Cloisonnement par tenant (§16.1) : un utilisateur ne voit que SES données.
+     *
+     * @return Echeance[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->orderBy('e.dateEcheance', 'ASC')
             ->getQuery()
             ->getResult();
     }

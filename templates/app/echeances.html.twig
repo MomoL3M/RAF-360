@@ -128,7 +128,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -141,26 +141,26 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
 
     <div class="kpis">
-      <div class="card kpi rise"><div class="top">Obligations suivies</div><div class="val navy tnum"><span data-count="6">0</span></div><div class="sub">sur les 12 prochains mois</div></div>
-      <div class="card kpi rise"><div class="top">En retard</div><div class="val red tnum"><span data-count="1">0</span></div><div class="sub">à régulariser en priorité</div></div>
-      <div class="card kpi rise"><div class="top">À venir · 30 jours</div><div class="val navy tnum"><span data-count="2">0</span></div><div class="sub">à préparer ce mois</div></div>
-      <div class="card kpi rise"><div class="top">Montant à provisionner</div><div class="val gold tnum"><span data-count="11650" data-suffix=" €">0 €</span></div><div class="sub">dont 8 230 € estimatifs</div></div>
+      <div class="card kpi rise"><div class="top">Obligations suivies</div><div class="val navy tnum"><span data-count="{{ kpis.total }}">0</span></div><div class="sub">sur les 12 prochains mois</div></div>
+      <div class="card kpi rise"><div class="top">En retard</div><div class="val red tnum"><span data-count="{{ kpis.retard }}">0</span></div><div class="sub">à régulariser en priorité</div></div>
+      <div class="card kpi rise"><div class="top">À venir · 30 jours</div><div class="val navy tnum"><span data-count="{{ kpis.aVenir30 }}">0</span></div><div class="sub">à préparer ce mois</div></div>
+      <div class="card kpi rise"><div class="top">Montant à provisionner</div><div class="val gold tnum"><span data-count="{{ kpis.montant }}" data-suffix=" €">0 €</span></div><div class="sub">dont {{ kpis.estimatif }} estimatifs</div></div>
     </div>
 
     <section class="alert rise">
       <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
-      <h2>1<sup>er</sup> acompte d'IS : ≈ 4 250 € estimés</h2>
-      <p>Estimation calculée à partir de votre dernier IS connu (1/4 de l'IS N-1). Le copilote affinera le montant réel dès réception de la liasse. <b>Prévoir la provision avant le 15 septembre.</b></p>
-      <div class="src">Base : impôt sur les sociétés N-1 (démonstration) · à confirmer avec votre expert-comptable</div>
+      <h2>Anticipez vos montants estimatifs</h2>
+      <p>Certaines obligations sont encore <b>estimatives</b> (total {{ kpis.estimatif }}). Le copilote affinera chaque montant dès réception des pièces. <b>Prévoyez la provision correspondante.</b></p>
+      <div class="src">Sources officielles datées · à confirmer avec votre expert-comptable</div>
     </section>
 
     <div class="card rise">
       <div class="toolbar">
         <div class="filters" id="filters">
-          <button class="fbtn on" data-f="all">Toutes <span class="n">6</span></button>
-          <button class="fbtn" data-f="retard"><span class="prio-dot" style="background:var(--red)"></span> En retard <span class="n">1</span></button>
-          <button class="fbtn" data-f="afaire">À faire <span class="n">4</span></button>
-          <button class="fbtn" data-f="avalider"><span class="prio-dot" style="background:var(--gold)"></span> À valider <span class="n">1</span></button>
+          <button class="fbtn on" data-f="all">Toutes <span class="n">{{ kpis.total }}</span></button>
+          <button class="fbtn" data-f="retard"><span class="prio-dot" style="background:var(--red)"></span> En retard <span class="n">{{ kpis.retard }}</span></button>
+          <button class="fbtn" data-f="afaire">À faire <span class="n">{{ kpis.afaire }}</span></button>
+          <button class="fbtn" data-f="avalider"><span class="prio-dot" style="background:var(--gold)"></span> À valider <span class="n">{{ kpis.avalider }}</span></button>
         </div>
       </div>
       <div class="timeline" id="list"></div>
@@ -168,25 +168,18 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
-/* échéances démo, triées proche -> lointain (base : 29 juil. 2026) */
-const ECH=[
- {t:"TVA (CA3) — Juin",d:"24",m:"juil.",statut:"En retard",key:"retard",prio:"Haute",montant:"3 420 €",mt:"réel",overdue:true},
- {t:"Déclaration TVA (CA3) — Juillet",d:"12",m:"août",statut:"À faire",key:"afaire",prio:"Haute",montant:"3 980 €",mt:"estimatif"},
- {t:"Renouvellement bail commercial",d:"20",m:"août",statut:"À valider",key:"avalider",prio:"Moyenne"},
- {t:"DSN mensuelle — Août",d:"05",m:"sept.",statut:"À faire",key:"afaire",prio:"Haute"},
- {t:"1er acompte d'IS",d:"15",m:"sept.",statut:"À faire",key:"afaire",prio:"Moyenne",montant:"4 250 €",mt:"estimatif"},
- {t:"Approbation des comptes annuels",d:"30",m:"juin",statut:"À faire",key:"afaire",prio:"Basse"}
-];
-const COL={"En retard":"red","À faire":"slate","À valider":"gold"};
-const PRIOC={Haute:"var(--red)",Moyenne:"var(--gold)",Basse:"var(--slate)"};
+<script>
+/* Échéances RÉELLES de l'entreprise connectée (rendu côté client — SEO indifférent, /app noindex). */
+const ECH = {{ echeances|json_encode|raw }};
+{% verbatim %}
 const list=document.getElementById('list');
+const empty=document.getElementById('empty');
 function render(rows){
+ empty.style.display=rows.length?'none':'block';
  list.innerHTML=rows.map(e=>{
-  const c=COL[e.statut];
-  const chipDate=e.overdue?"var(--red)":(c==='gold'?"#8a6d12":(c==='slate'?"var(--navy-800)":"var(--navy-800)"));
+  const chipDate=e.overdue?"var(--red)":(e.col==='gold'?"#8a6d12":"var(--navy-800)");
   const amt=e.montant?`<span class="amt-chip ${e.mt==='réel'?'reel':'estim'}">${e.montant} · ${e.mt}</span>`:"";
   return `<div class="list-row ${e.overdue?'overdue':''}" data-key="${e.key}">
     <div class="lr-left">
@@ -194,11 +187,11 @@ function render(rows){
         <span class="d" style="color:${chipDate}">${e.d}</span><span class="m">${e.m}</span></div>
       <div>
         <div class="lr-title">${e.t}${amt}</div>
-        <div class="lr-meta"><span class="prio-dot" style="background:${PRIOC[e.prio]}"></span> Priorité ${e.prio.toLowerCase()}${e.overdue?' · <b>en retard</b>':''}</div>
+        <div class="lr-meta">${e.overdue?'<b>En retard</b>':'À échéance le '+e.d+' '+e.m}</div>
       </div>
     </div>
     <div class="lr-right">
-      <span class="badge ${c}">${e.statut}</span>
+      <span class="badge ${e.col}">${e.statut}</span>
       <button class="btn-prep">Préparer</button>
     </div>
   </div>`;}).join('');
@@ -206,7 +199,6 @@ function render(rows){
 render(ECH);
 
 /* filtres */
-const empty=document.getElementById('empty');
 document.getElementById('filters').addEventListener('click',ev=>{
  const b=ev.target.closest('.fbtn');if(!b)return;
  document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Entreprise;
 use App\Entity\Facture;
 use App\Enum\StatutFacture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -41,5 +42,20 @@ final class FactureRepository extends ServiceEntityRepository
         }
 
         return $counts;
+    }
+
+    /**
+     * Toutes les factures d'une entreprise, émission la plus récente d'abord (§16.1).
+     *
+     * @return Facture[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->orderBy('f.dateEmission', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Action;
+use App\Entity\Entreprise;
 use App\Enum\PrioriteAction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,21 @@ final class ActionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.priorite = :priorite')
             ->setParameter('priorite', $priorite)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Toutes les actions d'une entreprise, dans l'ordre de création (§16.1).
+     *
+     * @return Action[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->orderBy('a.id', 'ASC')
             ->getQuery()
             ->getResult();
     }

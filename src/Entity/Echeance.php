@@ -40,9 +40,25 @@ class Echeance
     #[ORM\Column(enumType: StatutEcheance::class)]
     private StatutEcheance $statut = StatutEcheance::A_FAIRE;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Entreprise $entreprise;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEntreprise(): Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
     }
 
     public function getLibelle(): string

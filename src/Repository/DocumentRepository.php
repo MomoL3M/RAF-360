@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Document;
+use App\Entity\Entreprise;
 use App\Enum\DomaineDocument;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,21 @@ final class DocumentRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('d')
             ->andWhere('d.domaine = :domaine')
             ->setParameter('domaine', $domaine)
+            ->orderBy('d.dateDepot', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Tous les documents d'une entreprise, dépôt le plus récent d'abord (§16.1).
+     *
+     * @return Document[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
             ->orderBy('d.dateDepot', 'DESC')
             ->getQuery()
             ->getResult();

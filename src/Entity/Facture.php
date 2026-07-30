@@ -46,9 +46,25 @@ class Facture
     #[ORM\Column]
     private bool $eFacture = false;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Entreprise $entreprise;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEntreprise(): Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
     }
 
     public function getNumero(): string
