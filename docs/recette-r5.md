@@ -1,7 +1,15 @@
 # Recette R5 — checklist §25, preuve par item
 
 **Date** : 2026-07-30 · **Version auditée** : `main` (après R4-B) · **Auditeur** : Claude Code
-**Verdict global** : ⛔ **mise en ligne BLOQUÉE** — 9 points bloquants, dont 5 ne dépendent que du chef de projet.
+**Mise à jour** : 2026-07-30 (fin de journée) — les 4 bloquants techniques et le gate R0
+sont soldés ; voir la synthèse §B.
+
+**Verdict global** : ⛔ **mise en ligne toujours BLOQUÉE** — **5 bloquants restants, tous
+côté chef de projet** (contenus réels, mentions légales, CGV/CGU, domaine et hébergement,
+arbitrage CG-01). Aucun ne peut être levé par du code.
+
+À cela s'ajoute la recette impossible sans préproduction (§C) : performance, accessibilité
+et parité visuelle restent **non vérifiées** — ni réussies, ni échouées.
 
 ---
 
@@ -173,11 +181,30 @@ Tout ce qui est marqué ✅ ci-dessous a été **prouvé par une commande** (sor
 4. **Domaine + hébergeur + certificat** — conditionne HTTPS réel, HSTS, Search Console, uptime, SPF/DKIM/DMARC.
 5. **Arbitrage CG-01** (contraste ambre) pour solder le registre 0-R-V.
 
-### B. Travail technique restant (4)
-6. **Export et suppression des données utilisateur** (RGPD) + tableau des traitements + purges automatiques.
-7. **Sauvegardes chiffrées + test de restauration + RPO/RTO + PRA**, et **rollback documenté**.
-8. **Plan de mesure + analytics conforme** (sinon pilotage à l'aveugle, et trafic IA non mesuré).
-9. **Test de fumée post-déploiement** + **Renovate/Dependabot** + règles d'archivage.
+### B. Travail technique restant — ✅ **SOLDÉ le 2026-07-30**
+
+Les quatre bloquants techniques identifiés par cette recette ont été traités et vérifiés
+(détails dans les documents cités) :
+
+| # | Bloquant | État | Preuve |
+|---|---|---|---|
+| 6 | Export et suppression des données + tableau des traitements + purges | ✅ levé | Page « Mes données », `app:purger-donnees`, `traitements-donnees.md`, 4 tests fonctionnels |
+| 7 | Sauvegardes chiffrées + restauration testée + RPO/RTO + PRA + rollback | ✅ levé | `exploitation.md` §3 : cycle réellement exécuté, comptages identiques avant/après |
+| 8 | Plan de mesure + analytics conforme | ✅ levé | `plan-mesure.md`, contrôleur `tracking` unique, conversions annoncées par le serveur |
+| 9 | Test de fumée + Dependabot + règles d'archivage | ✅ levé | `bin/test-de-fumee.sh` (12/12), `dependabot.yml`, `exploitation.md` §7 |
+
+Découvertes au passage, corrigées :
+
+- **L'e-mail des prospects était journalisé en clair** (§2.6 / §17.1) → remplacé par une
+  empreinte SHA-256 non réversible. Cette recette ne l'avait pas vu au premier passage.
+- **La CI n'avait aucune base de données** : aucun test fonctionnel n'était donc possible.
+  PostgreSQL ajouté ; la couverture passe de 20 à 27 tests.
+- `/app` affichait encore « sera construit lors d'un prochain lot » alors que l'espace
+  existe → devenu le hub de compte.
+
+Restent, hors périmètre de ces quatre lots, deux points d'exploitation dépendant de
+l'hébergeur (`TODO-PM`) : la **copie des sauvegardes hors site** et la **planification
+supervisée des tâches** (sauvegarde, purge RGPD).
 
 ### C. Recette impossible sans préproduction (à replanifier)
 - **Lighthouse / Core Web Vitals** par gabarit (aucun budget §8.1 prouvé à ce jour).
@@ -186,8 +213,11 @@ Tout ce qui est marqué ✅ ci-dessous a été **prouvé par une commande** (sor
 - `docker compose up` sur machine vierge.
 - Tests d'accès inter-entreprises automatisés.
 
-### Prérequis transverse (hors checklist mais bloquant tout)
-- ⛔ **Aucun dépôt distant privé** : le gate **R0** est toujours ouvert. Tout le travail (30+ commits) n'existe que sur ce poste. **À traiter en priorité absolue, avant toute autre chose.**
+### Prérequis transverse — ✅ **FERMÉ le 2026-07-30**
+- Le gate **R0** est clos : dépôt privé `github.com/MomoL3M/RAF-360`. `main` = projet
+  Symfony, branche `baseline-nextjs-gelee` + tag `avant-mise-en-conformite` = existant gelé.
+  Vérifié avant publication : aucun secret dans les fichiers versionnés.
+- Conséquence : la **CI tourne enfin** (elle n'avait jamais été exécutée).
 
 ---
 
