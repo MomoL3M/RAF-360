@@ -79,5 +79,25 @@ jobs:
       - name: Tests (PHPUnit)
         run: vendor/bin/phpunit
 
-      - name: Audit de sécurité des dépendances
+      # Le test de fumée est joué ici sur un serveur local : il vérifie que les pages
+      # clés répondent ET affichent le bon contenu, sur une installation partie de zéro.
+      # C'est le même script que celui lancé après un déploiement (§23.2).
+      - name: Test de fumée
+        run: |
+          # php -S reconstruit $_SERVER à chaque requête : les variables du job n'y
+          # survivent pas (l'application repartirait sur les valeurs du .env, donc sur
+          # la mauvaise base). On les pose dans .env.local, lu quel que soit l'environnement.
+          printf 'APP_ENV=test\nDATABASE_URL="%s"\n' "$DATABASE_URL" > .env.local
+          php -S 127.0.0.1:8000 -t public >/dev/null 2>&1 &
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/health >/dev/null && break
+            sleep 1
+          done
+          ./bin/test-de-fumee.sh http://127.0.0.1:8000
+          rm -f .env.local
+
+      - name: Audit de sécurité des dépendances PHP
         run: composer audit
+
+      - name: Audit de sécurité des dépendances JavaScript (importmap)
+        run: php bin/console importmap:audit

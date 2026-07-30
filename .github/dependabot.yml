@@ -1,0 +1,31 @@
+# Mises à jour de dépendances surveillées (§23.2).
+# Les correctifs de sécurité passent en priorité ; les montées de version majeures
+# (Symfony, PHP) restent PLANIFIÉES, jamais subies.
+version: 2
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dépendances"]
+    commit-message:
+      prefix: "chore(deps)"
+    # Symfony et PHP se montent volontairement, avec recette : on ne veut pas d'une
+    # proposition automatique de version majeure au milieu d'un lot fonctionnel.
+    ignore:
+      - dependency-name: "symfony/*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels: ["ci"]
+    commit-message:
+      prefix: "chore(ci)"
+
+# Note : Dependabot ne connaît pas l'importmap Symfony (dépendances JavaScript).
+# Elles sont couvertes autrement : « php bin/console importmap:audit » tourne en CI, et
+# « importmap:outdated » est à passer en revue lors des lots de maintenance.
