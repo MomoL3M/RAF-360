@@ -24,7 +24,7 @@
                         en continu, anticipe les risques, et oriente chaque sujet réglementé vers le bon professionnel habilité.
                     </p>
                     <div class="reveal" data-controller="reveal" style="transition-delay:180ms;display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px;">
-                        <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
+                        <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold" data-action="click->tracking#evenement" data-tracking-nom-param="accueil_cta_diagnostic_haut">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
                         <a href="{{ path('produit') }}" class="m-btn m-btn-ghost">Explorer le produit</a>
                     </div>
                     <div class="reveal" data-controller="reveal" style="transition-delay:240ms;display:flex;gap:22px;flex-wrap:wrap;color:var(--muted);font-size:14px;">
@@ -296,7 +296,7 @@
                 Rejoignez les dirigeants qui pilotent sereinement leur entreprise avec RAF360. Diagnostic gratuit, sans engagement.
             </p>
             <div class="reveal" data-controller="reveal" style="transition-delay:140ms;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-                <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
+                <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold" data-action="click->tracking#evenement" data-tracking-nom-param="accueil_cta_diagnostic_bas">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
                 <a href="{{ path('produit') }}" class="m-btn m-btn-ghost on-dark">Explorer le produit</a>
             </div>
         </div>

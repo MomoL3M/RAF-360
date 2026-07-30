@@ -54,6 +54,8 @@ final class RegistrationController extends AbstractController
                 $utilisateur = $registrar->register($data->email, $data->plainPassword, $data->prenom, $data->nom);
                 // Authenticator explicite : le firewall en a deux (form_login + two_factor) depuis la 2FA.
                 $security->login($utilisateur, 'form_login');
+                // Étape 7 de l'entonnoir (docs/plan-mesure.md), annoncée par le serveur.
+                $this->addFlash('conversion', 'compte_cree');
 
                 return $this->redirectToRoute('onboarding');
             }

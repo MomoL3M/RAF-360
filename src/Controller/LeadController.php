@@ -100,10 +100,15 @@ final class LeadController extends AbstractController
         return $errors;
     }
 
-    /** Renvoie une redirection (schéma POST-redirect-GET) avec un message de confirmation. */
+    /**
+     * Renvoie une redirection (schéma POST-redirect-GET) avec un message de confirmation.
+     * Le flash « conversion » porte le nom d'événement de docs/plan-mesure.md : la mesure
+     * est ainsi déclenchée par le serveur, donc uniquement sur une soumission ACCEPTÉE.
+     */
     private function acknowledge(string $route): Response
     {
         $this->addFlash('success', 'Merci ! Votre demande a bien été enregistrée. Nous revenons vers vous très vite.');
+        $this->addFlash('conversion', 'diagnostic' === $route ? 'diagnostic_demande' : 'contact_message_envoye');
 
         return $this->redirectToRoute($route);
     }

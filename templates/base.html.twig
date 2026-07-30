@@ -36,7 +36,14 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    {# Mesure d'audience : point d'entrée unique (§20). Sans ANALYTICS_ENDPOINT configuré,
+       le contrôleur n'émet aucune requête et ne dépose rien.
+       La conversion est annoncée par le SERVEUR via un flash dédié : on ne compte ainsi
+       que les soumissions réellement acceptées. #}
+    {% set conversions = app.flashes('conversion') %}
+    <body data-controller="tracking"
+          data-tracking-endpoint-value="{{ analytics_endpoint }}"
+          {% if conversions is not empty %}data-tracking-conversion-value="{{ conversions|first }}"{% endif %}>
         {% block body %}{% endblock %}
     </body>
 </html>

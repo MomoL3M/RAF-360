@@ -71,6 +71,8 @@ final class OnboardingController extends AbstractController
 
                 $utilisateur->setEntreprise($entreprise);
                 $em->flush();
+                // Étape 8 de l'entonnoir (docs/plan-mesure.md), annoncée par le serveur.
+                $this->addFlash('conversion', 'onboarding_termine');
 
                 return $this->redirectToRoute('app_dashboard');
             }

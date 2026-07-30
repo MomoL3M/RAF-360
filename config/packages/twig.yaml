@@ -1,5 +1,9 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        # Point de collecte de la mesure d'audience (§20). Vide = aucune mesure et aucune
+        # requête réseau. La valeur réelle vient de l'environnement, jamais du dépôt.
+        analytics_endpoint: '%env(default::ANALYTICS_ENDPOINT)%'
 
 when@test:
     twig:

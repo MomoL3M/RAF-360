@@ -161,8 +161,8 @@
                 Le diagnostic gratuit vous montre votre niveau de préparation en quelques minutes, sans création de compte.
             </p>
             <div class="reveal" data-controller="reveal" style="transition-delay:140ms;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-                <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
-                <a href="{{ path('contact') }}" class="m-btn m-btn-ghost on-dark">Parler à un conseiller</a>
+                <a href="{{ path('diagnostic') }}" class="m-btn m-btn-gold" data-action="click->tracking#evenement" data-tracking-nom-param="tarifs_cta_diagnostic">Démarrer le diagnostic gratuit {{ icon.arrowRight(18) }}</a>
+                <a href="{{ path('contact') }}" class="m-btn m-btn-ghost on-dark" data-action="click->tracking#evenement" data-tracking-nom-param="tarifs_cta_conseiller">Parler à un conseiller</a>
             </div>
         </div>
     </section>
