@@ -1,0 +1,13 @@
+# Double authentification (§16.1). TOTP (Google Authenticator, Authy, FreeOTP…).
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+
+    totp:
+        enabled: true
+        server_name: RAF360
+        issuer: RAF360
+        # Le nombre de chiffres (6) est fixé par TotpConfiguration dans l'entité Utilisateur.
+        # Gabarit du formulaire de défi (saisie du code).
+        template: security/2fa_form.html.twig

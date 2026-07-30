@@ -20,6 +20,7 @@ final class AccountRegistrarTest extends TestCase
         $em = $this->createMock(EntityManagerInterface::class);
         $em->expects(self::once())->method('persist')->with(self::isInstanceOf(Utilisateur::class));
         $em->expects(self::once())->method('flush');
+        $em->method('getClassMetadata')->willReturn(new ClassMetadata(Utilisateur::class));
 
         $hasher = $this->createMock(UserPasswordHasherInterface::class);
         $hasher->expects(self::once())->method('hashPassword')->willReturn('$argon2id$fake');
@@ -32,10 +33,9 @@ final class AccountRegistrarTest extends TestCase
         self::assertSame('$argon2id$fake', $utilisateur->getPassword(), 'le mot de passe stocké est le haché, jamais le clair');
     }
 
-    /** Construit le vrai repository (final) via un ManagerRegistry mocké — non appelé par register(). */
+    /** Construit le vrai repository (final) via un ManagerRegistry stubé — non appelé par register(). */
     private function repository(EntityManagerInterface $em): UtilisateurRepository
     {
-        $em->method('getClassMetadata')->willReturn(new ClassMetadata(Utilisateur::class));
         $registry = $this->createStub(ManagerRegistry::class);
         $registry->method('getManagerForClass')->willReturn($em);
 

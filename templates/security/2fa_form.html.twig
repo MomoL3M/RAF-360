@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vérification en deux étapes — RAF360{% endblock %}
+
+{% block body %}
+    <main id="contenu">
+        <h1>Vérification en deux étapes</h1>
+        <p>Saisissez le code à 6 chiffres affiché par votre application d'authentification.</p>
+
+        {% if authenticationError %}
+            <p role="alert">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</p>
+        {% endif %}
+
+        <form class="form" method="post" action="{{ path('2fa_login_check') }}">
+            <label for="_auth_code">Code d'authentification</label>
+            <input id="_auth_code" type="text" name="_auth_code" inputmode="numeric" autocomplete="one-time-code"
+                   pattern="[0-9]*" autofocus required>
+
+            {% if isCsrfProtectionEnabled %}
+                <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+            {% endif %}
+
+            <button type="submit">Valider</button>
+        </form>
+
+        <p style="margin-top:18px"><a href="{{ logoutPath }}">Se déconnecter</a></p>
+    </main>
+{% endblock %}

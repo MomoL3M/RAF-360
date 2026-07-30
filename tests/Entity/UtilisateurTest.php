@@ -38,4 +38,15 @@ final class UtilisateurTest extends TestCase
 
         self::assertSame('dirigeant@example.fr', $utilisateur->getUserIdentifier());
     }
+
+    public function testDoubleAuthentificationDesactiveeParDefautPuisActiveeAvecUnSecret(): void
+    {
+        $utilisateur = (new Utilisateur())->setEmail('admin@example.fr');
+        self::assertFalse($utilisateur->isTotpAuthenticationEnabled(), '2FA inactive tant qu\'aucun secret n\'est défini.');
+
+        $utilisateur->setTotpSecret('JBSWY3DPEHPK3PXP');
+        self::assertTrue($utilisateur->isTotpAuthenticationEnabled());
+        self::assertSame('admin@example.fr', $utilisateur->getTotpAuthenticationUsername());
+        self::assertNotNull($utilisateur->getTotpAuthenticationConfiguration());
+    }
 }

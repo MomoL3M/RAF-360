@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sécurité du compte — RAF360{% endblock %}
+
+{% block body %}
+    <main id="contenu">
+        <h1>Double authentification</h1>
+
+        {% for message in app.flashes('success') %}
+            <p role="status">{{ message }}</p>
+        {% endfor %}
+
+        {% if active %}
+            <p>La double authentification est <strong>activée</strong> sur votre compte. Un code vous sera demandé à chaque connexion.</p>
+            <p style="margin-top:18px"><a href="{{ path('app_dashboard') }}">Retour au tableau de bord</a></p>
+        {% else %}
+            <p>Renforcez la sécurité de votre compte. Scannez ce QR code avec votre application d'authentification
+                (Google Authenticator, Authy, FreeOTP…), puis saisissez le code à 6 chiffres pour activer.</p>
+
+            {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+
+            <img src="{{ qrCode }}" width="220" height="220"
+                 alt="QR code à scanner avec votre application d'authentification">
+
+            <p>Impossible de scanner ? Saisissez cette clé manuellement :<br>
+                <code>{{ secret }}</code></p>
+
+            <form method="post" action="{{ path('securite_compte') }}">
+                <label for="_auth_code">Code de vérification</label>
+                <input id="_auth_code" type="text" name="_auth_code" inputmode="numeric" autocomplete="one-time-code"
+                       pattern="[0-9]*" required autofocus>
+                <input type="hidden" name="_token" value="{{ csrf_token('securite_2fa') }}">
+                <button type="submit">Activer la double authentification</button>
+            </form>
+        {% endif %}
+    </main>
+{% endblock %}

@@ -52,7 +52,8 @@ final class RegistrationController extends AbstractController
 
             if ([] === $errors) {
                 $utilisateur = $registrar->register($data->email, $data->plainPassword, $data->prenom, $data->nom);
-                $security->login($utilisateur);
+                // Authenticator explicite : le firewall en a deux (form_login + two_factor) depuis la 2FA.
+                $security->login($utilisateur, 'form_login');
 
                 return $this->redirectToRoute('onboarding');
             }

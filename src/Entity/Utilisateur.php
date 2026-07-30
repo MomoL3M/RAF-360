@@ -7,6 +7,9 @@ namespace App\Entity;
 use App\Repository\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface as TotpTwoFactorInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\UniqueConstraint(name: 'uniq_utilisateur_email', columns: ['email'])]
 #[UniqueEntity('email', message: 'Un compte existe déjà avec cette adresse e-mail.')]
-class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface, TotpTwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -50,6 +53,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?Entreprise $entreprise = null;
+
+    /** Secret TOTP (base32) une fois la double authentification activée ; null sinon. */
+    #[ORM\Column(nullable: true)]
+    private ?string $totpSecret = null;
 
     public function getId(): ?int
     {
@@ -141,6 +148,35 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->entreprise = $entreprise;
 
         return $this;
+    }
+
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+
+    public function setTotpSecret(?string $totpSecret): static
+    {
+        $this->totpSecret = $totpSecret;
+
+        return $this;
+    }
+
+    // --- Double authentification TOTP (§16.1) ---
+
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return null !== $this->totpSecret && '' !== $this->totpSecret;
+    }
+
+    public function getTotpAuthenticationUsername(): string
+    {
+        return $this->email;
+    }
+
+    public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
+    {
+        return new TotpConfiguration((string) $this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
     }
 
     /** Aucune donnée sensible temporaire à effacer. */

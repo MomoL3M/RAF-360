@@ -29,13 +29,16 @@ final readonly class AccountRegistrar
         return null !== $this->utilisateurs->findOneBy(['email' => $this->normalize($email)]);
     }
 
-    public function register(string $email, string $plainPassword, string $prenom, string $nom, ?Entreprise $entreprise = null): Utilisateur
+    /**
+     * @param list<string> $roles
+     */
+    public function register(string $email, string $plainPassword, string $prenom, string $nom, ?Entreprise $entreprise = null, array $roles = ['ROLE_DIRIGEANT']): Utilisateur
     {
         $utilisateur = new Utilisateur();
         $utilisateur->setEmail($this->normalize($email))
             ->setPrenom($prenom)
             ->setNom($nom)
-            ->setRoles(['ROLE_DIRIGEANT'])
+            ->setRoles($roles)
             ->setEntreprise($entreprise);
         $utilisateur->setPassword($this->hasher->hashPassword($utilisateur, $plainPassword));
 
