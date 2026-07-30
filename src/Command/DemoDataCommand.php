@@ -182,6 +182,7 @@ final class DemoDataCommand extends Command
             ['Valider la TVA du mois avant échéance', 'Contrôle des écritures puis télédéclaration.', PrioriteAction::HAUTE, StatutEcheance::A_VALIDER],
             ['Régulariser la facture en retard', 'Facture FAC-2026-0142 non réglée à échéance.', PrioriteAction::HAUTE, StatutEcheance::EN_RETARD],
             ['Vérifier un possible doublon de facture', 'FAC-2026-0139 identique à FAC-2026-0142.', PrioriteAction::MOYENNE, StatutEcheance::A_CONFIRMER],
+            ['Faire relire une clause contractuelle', 'Escalade vers un avocat partenaire.', PrioriteAction::MOYENNE, StatutEcheance::ESCALADE],
             ['Compléter le dossier RH', 'Contrat CDI Martin à faire signer.', PrioriteAction::BASSE, StatutEcheance::A_FAIRE],
         ];
         foreach ($lignes as [$libelle, $description, $priorite, $statut]) {

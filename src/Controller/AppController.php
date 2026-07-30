@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Action;
+use App\Entity\Document;
 use App\Entity\Echeance;
 use App\Entity\Entreprise;
+use App\Entity\Facture;
 use App\Entity\Utilisateur;
+use App\Enum\DomaineDocument;
+use App\Enum\PrioriteAction;
 use App\Enum\StatutEcheance;
+use App\Enum\StatutFacture;
 use App\Enum\TypeMontant;
+use App\Repository\ActionRepository;
+use App\Repository\DocumentRepository;
 use App\Repository\EcheanceRepository;
+use App\Repository\FactureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -64,15 +73,39 @@ final class AppController extends AbstractController
     }
 
     #[Route('/documents', name: 'app_documents', methods: ['GET'])]
-    public function documents(): Response
+    public function documents(DocumentRepository $documents): Response
     {
-        return $this->render('app/documents.html.twig');
+        $entreprise = $this->entrepriseCourante();
+        if (!$entreprise instanceof Entreprise) {
+            return $this->redirectToRoute('onboarding');
+        }
+
+        $rows = $documents->findForEntreprise($entreprise);
+
+        return $this->render('app/documents.html.twig', [
+            'entreprise' => $entreprise,
+            'utilisateur' => $this->getUser(),
+            'tree' => $this->documentsGroupes($rows),
+            'kpis' => $this->documentKpis($rows),
+        ]);
     }
 
     #[Route('/factures', name: 'app_factures', methods: ['GET'])]
-    public function factures(): Response
+    public function factures(FactureRepository $factures): Response
     {
-        return $this->render('app/factures.html.twig');
+        $entreprise = $this->entrepriseCourante();
+        if (!$entreprise instanceof Entreprise) {
+            return $this->redirectToRoute('onboarding');
+        }
+
+        $rows = $factures->findForEntreprise($entreprise);
+
+        return $this->render('app/factures.html.twig', [
+            'entreprise' => $entreprise,
+            'utilisateur' => $this->getUser(),
+            'factures' => array_map($this->factureEnVue(...), $rows),
+            'kpis' => $this->factureKpis($rows),
+        ]);
     }
 
     #[Route('/dataroom', name: 'app_dataroom', methods: ['GET'])]
@@ -82,9 +115,21 @@ final class AppController extends AbstractController
     }
 
     #[Route('/actions', name: 'app_actions', methods: ['GET'])]
-    public function actions(): Response
+    public function actions(ActionRepository $actions): Response
     {
-        return $this->render('app/actions.html.twig');
+        $entreprise = $this->entrepriseCourante();
+        if (!$entreprise instanceof Entreprise) {
+            return $this->redirectToRoute('onboarding');
+        }
+
+        $rows = $actions->findForEntreprise($entreprise);
+
+        return $this->render('app/actions.html.twig', [
+            'entreprise' => $entreprise,
+            'utilisateur' => $this->getUser(),
+            'actions' => array_map($this->actionEnVue(...), $rows),
+            'kpis' => $this->actionKpis($rows),
+        ]);
     }
 
     #[Route('/assistant', name: 'app_assistant', methods: ['GET'])]
@@ -169,6 +214,165 @@ final class AppController extends AbstractController
             'montant' => intdiv($totalCents, 100),
             'estimatif' => $this->euros($estimCents),
         ];
+    }
+
+    /**
+     * @return array<string, string|bool>
+     */
+    private function factureEnVue(Facture $facture): array
+    {
+        $statut = $facture->getStatut();
+        $col = match ($statut) {
+            StatutFacture::VALIDEE => 'green',
+            StatutFacture::DOUBLON => 'red',
+            default => 'gold',
+        };
+        $date = $facture->getDateEmission();
+
+        return [
+            'numero' => $facture->getNumero(),
+            'tiers' => $facture->getTiers(),
+            'montant' => $this->euros($facture->getMontantCentimes()),
+            'statut' => $statut->label(),
+            'col' => $col,
+            'date' => $date->format('d').' '.self::MOIS[(int) $date->format('n')],
+            'efacture' => $facture->isEFacture(),
+        ];
+    }
+
+    /**
+     * @param Facture[] $rows
+     *
+     * @return array<string, int>
+     */
+    private function factureKpis(array $rows): array
+    {
+        $aTraiter = $validees = $doublons = $efac = 0;
+        foreach ($rows as $facture) {
+            if (StatutFacture::A_TRAITER === $facture->getStatut()) {
+                ++$aTraiter;
+            } elseif (StatutFacture::VALIDEE === $facture->getStatut()) {
+                ++$validees;
+            } elseif (StatutFacture::DOUBLON === $facture->getStatut()) {
+                ++$doublons;
+            }
+            if ($facture->isEFacture()) {
+                ++$efac;
+            }
+        }
+
+        return [
+            'aTraiter' => $aTraiter,
+            'validees' => $validees,
+            'doublons' => $doublons,
+            'efacturePct' => [] !== $rows ? (int) round($efac / \count($rows) * 100) : 0,
+        ];
+    }
+
+    /**
+     * Documents groupés par domaine (structure attendue par l'arborescence de la vue).
+     * Les groupes vides sont omis.
+     *
+     * @param Document[] $docs
+     *
+     * @return list<array{key: string, icon: string, label: string, files: list<array<string, string|int>>}>
+     */
+    private function documentsGroupes(array $docs): array
+    {
+        $groupes = [
+            ['key' => 'corp', 'icon' => '🏛️', 'label' => 'Documents corporate', 'dom' => DomaineDocument::CORPORATE],
+            ['key' => 'biz', 'icon' => '🤝', 'label' => 'Documents business', 'dom' => DomaineDocument::BUSINESS],
+            ['key' => 'rh', 'icon' => '👥', 'label' => 'Documents RH', 'dom' => DomaineDocument::RH],
+        ];
+
+        $out = [];
+        foreach ($groupes as $groupe) {
+            $files = [];
+            foreach ($docs as $doc) {
+                if ($doc->getDomaine() !== $groupe['dom']) {
+                    continue;
+                }
+                $date = $doc->getDateDepot();
+                $files[] = [
+                    'n' => $doc->getNom(),
+                    'type' => $doc->getTypeDocument(),
+                    'conf' => $doc->getScoreConfiance() ?? 0,
+                    'date' => $date->format('d').' '.self::MOIS[(int) $date->format('n')],
+                ];
+            }
+            if ([] !== $files) {
+                $out[] = ['key' => $groupe['key'], 'icon' => $groupe['icon'], 'label' => $groupe['label'], 'files' => $files];
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param Document[] $docs
+     *
+     * @return array<string, int>
+     */
+    private function documentKpis(array $docs): array
+    {
+        $scores = [];
+        $aFiabiliser = 0;
+        foreach ($docs as $doc) {
+            $score = $doc->getScoreConfiance();
+            if (null !== $score) {
+                $scores[] = $score;
+            }
+            if (!$doc->estFiable()) {
+                ++$aFiabiliser;
+            }
+        }
+
+        return [
+            'total' => \count($docs),
+            'scoreMoyen' => [] !== $scores ? (int) round(array_sum($scores) / \count($scores)) : 0,
+            'aFiabiliser' => $aFiabiliser,
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function actionEnVue(Action $action): array
+    {
+        [$col, $stripe] = match ($action->getStatut()) {
+            StatutEcheance::EN_RETARD, StatutEcheance::RISQUE => ['red', '#d64545'],
+            StatutEcheance::A_VALIDER, StatutEcheance::A_CONFIRMER => ['gold', '#c9a227'],
+            StatutEcheance::ESCALADE => ['navy', '#14306b'],
+            default => ['slate', '#64748b'],
+        };
+
+        return [
+            't' => $action->getLibelle(),
+            'sub' => $action->getDescription() ?? $action->getPriorite()->label(),
+            'statut' => $action->getStatut()->label(),
+            'col' => $col,
+            'stripe' => $stripe,
+        ];
+    }
+
+    /**
+     * @param Action[] $rows
+     *
+     * @return array<string, int>
+     */
+    private function actionKpis(array $rows): array
+    {
+        $risque = $escalade = 0;
+        foreach ($rows as $action) {
+            if (PrioriteAction::HAUTE === $action->getPriorite()) {
+                ++$risque;
+            }
+            if (StatutEcheance::ESCALADE === $action->getStatut()) {
+                ++$escalade;
+            }
+        }
+
+        return ['total' => \count($rows), 'risque' => $risque, 'escalade' => $escalade];
     }
 
     private function euros(int $cents): string

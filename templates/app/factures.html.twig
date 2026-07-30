@@ -130,7 +130,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -143,15 +143,15 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
 
     <div class="kpis k3">
-      <div class="card kpi rise"><div class="top">À traiter</div><div class="val gold tnum"><span data-count="7">0</span></div><div class="sub">en attente de validation</div></div>
-      <div class="card kpi rise"><div class="top">Validées</div><div class="val green tnum"><span data-count="34">0</span></div><div class="sub">ce mois</div></div>
-      <div class="card kpi rise"><div class="top">Doublons détectés</div><div class="val red tnum"><span data-count="1">0</span></div><div class="sub">à confirmer</div></div>
+      <div class="card kpi rise"><div class="top">À traiter</div><div class="val gold tnum"><span data-count="{{ kpis.aTraiter }}">0</span></div><div class="sub">en attente de validation</div></div>
+      <div class="card kpi rise"><div class="top">Validées</div><div class="val green tnum"><span data-count="{{ kpis.validees }}">0</span></div><div class="sub">au total</div></div>
+      <div class="card kpi rise"><div class="top">Doublons détectés</div><div class="val red tnum"><span data-count="{{ kpis.doublons }}">0</span></div><div class="sub">à confirmer</div></div>
     </div>
 
     <section class="alert gold rise">
       <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
-      <h2>2 factures clients à relancer — retard de paiement probable</h2>
-      <p>BÉTA (<b>9 200 €</b>) et GAMMA (<b>6 480 €</b>) approchent de leur échéance avec un historique de paiement &gt; 45 j. Le copilote anticipe un impact sur le besoin en fonds de roulement de février.</p>
+      <h2>{{ kpis.aTraiter }} facture{{ kpis.aTraiter > 1 ? 's' : '' }} à traiter{% if kpis.doublons %} · {{ kpis.doublons }} doublon{{ kpis.doublons > 1 ? 's' : '' }} à confirmer{% endif %}</h2>
+      <p>Le copilote pré-impute vos factures et détecte les doublons avant validation, pour sécuriser vos encaissements et préparer la facturation électronique.</p>
       <div class="scen">
         <div class="s"><h4>Relance amiable automatisée</h4>
           <div class="li pro"><span>▲</span><span>Préserve la relation</span></div>
@@ -162,8 +162,7 @@ body{font-family:var(--sans);color:var(--ink);background:
           <div class="li pro"><span>▲</span><span>Sécurise le cash</span></div>
           <div class="li con"><span>▼</span><span>Réduit la marge de ~1-2 %</span></div></div>
       </div>
-      <div class="reco"><b>Recommandation :</b> relancer BÉTA aujourd'hui ; proposer un escompte à GAMMA si non payé au 25 février.</div>
-      <div class="a-cta"><button class="btn btn-gold">Lancer les relances</button></div>
+      <div class="reco"><b>Recommandation :</b> traitez les factures en attente et confirmez les doublons détectés avant validation.</div>
     </section>
 
     <div class="card rise">
@@ -172,15 +171,37 @@ body{font-family:var(--sans);color:var(--ink);background:
           <div style="font-size:16px;font-weight:800;color:var(--navy-900);letter-spacing:-.02em">Préparation à la facturation électronique</div>
           <div style="font-size:13.5px;color:var(--slate);margin-top:6px;max-width:60ch">RAF360 est un <b style="color:var(--ink)">outil de gestion compatible</b>, connecté à une plateforme partenaire. Réception des factures électroniques obligatoire au 1<sup>er</sup> sept. 2026 ; émission pour les TPE-PME au 1<sup>er</sup> sept. 2027.</div>
         </div>
-        <div class="gauge" data-gauge="65" data-color="#2c6fb0">
+        <div class="gauge" data-gauge="{{ kpis.efacturePct }}" data-color="#2c6fb0">
           <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#eef1f7" stroke-width="12"/><circle class="arc" cx="60" cy="60" r="52" fill="none" stroke="#2c6fb0" stroke-width="12" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
-          <div class="pct"><b class="tnum" data-count="65" data-suffix="%">0%</b><small>prêt</small></div>
+          <div class="pct"><b class="tnum" data-count="{{ kpis.efacturePct }}" data-suffix="%">0%</b><small>en e-facture</small></div>
         </div>
       </div>
     </div>
+
+    <div class="card rise" style="margin-top:16px">
+      <div class="card-h"><span class="lbl">Factures</span></div>
+      {% if factures is empty %}
+        <p style="color:var(--slate);font-size:14px;padding:6px 0">Aucune facture pour le moment. Elles apparaîtront ici dès la première connexion d'une source.</p>
+      {% else %}
+        <div style="display:flex;flex-direction:column;gap:10px">
+          {% for f in factures %}
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--hairline);border-radius:12px">
+              <div style="min-width:0">
+                <div style="font-weight:700;color:var(--navy-900);font-size:14.5px">{{ f.tiers }} <span style="color:var(--slate);font-weight:500">· {{ f.numero }}</span></div>
+                <div style="font-size:12.5px;color:var(--slate);margin-top:3px">Émise le {{ f.date }}{% if f.efacture %} · e-facture{% endif %}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+                <span class="tnum" style="font-weight:800;color:var(--navy-900)">{{ f.montant }}</span>
+                <span class="badge {{ f.col }}">{{ f.statut }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
 <script>{% verbatim %}
 function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1200;

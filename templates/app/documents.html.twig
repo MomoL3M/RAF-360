@@ -136,7 +136,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -149,16 +149,16 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
 
     <div class="kpis k3">
-      <div class="card kpi rise"><div class="top">Pièces classées</div><div class="val tnum"><span data-count="11">0</span></div><div class="sub">corporate · business · RH</div></div>
-      <div class="card kpi rise"><div class="top">Score de confiance moyen</div><div class="val green tnum"><span data-count="92" data-suffix=" %">0 %</span></div><div class="sub">OCR + contrôles</div></div>
-      <div class="card kpi rise"><div class="top">Pièces à réclamer</div><div class="val gold tnum"><span data-count="3">0</span></div><div class="sub">demandes générées</div></div>
+      <div class="card kpi rise"><div class="top">Pièces classées</div><div class="val tnum"><span data-count="{{ kpis.total }}">0</span></div><div class="sub">corporate · business · RH</div></div>
+      <div class="card kpi rise"><div class="top">Score de confiance moyen</div><div class="val green tnum"><span data-count="{{ kpis.scoreMoyen }}" data-suffix=" %">0 %</span></div><div class="sub">OCR + contrôles</div></div>
+      <div class="card kpi rise"><div class="top">Pièces à fiabiliser</div><div class="val gold tnum"><span data-count="{{ kpis.aFiabiliser }}">0</span></div><div class="sub">sous le seuil de 85 %</div></div>
     </div>
 
     <section class="alert gold rise">
       <span class="a-tag"><span class="pulse"></span> Veille documentaire · Copilote</span>
-      <h2>3 pièces manquantes pour une analyse fiable</h2>
-      <p>Le contrat client BÉTA a une confiance de <b>72 %</b> (clause de responsabilité illisible). Il manque le relevé bancaire de décembre et la liasse fiscale N-1. Le copilote a déjà généré les demandes.</p>
-      <div class="a-cta"><button class="btn btn-gold">Réclamer les pièces</button><button class="btn btn-ghost">Simulateur de paie</button></div>
+      <h2>{{ kpis.aFiabiliser }} pièce{{ kpis.aFiabiliser > 1 ? 's' : '' }} sous le seuil de fiabilité</h2>
+      <p>L'OCR attribue à chaque pièce un score de confiance. En dessous de 85 %, le copilote signale la pièce pour relecture ou nouvelle numérisation avant toute exploitation.</p>
+      <div class="a-cta"><button class="btn btn-gold">Vérifier les pièces</button><button class="btn btn-ghost">Simulateur de paie</button></div>
     </section>
 
     <div class="dropzone rise">
@@ -178,25 +178,12 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
-const TREE=[
- {key:'corp',icon:'🏛️',label:'Documents corporate',files:[
-   {n:'Statuts_société.pdf',type:'Statuts',conf:99,date:'12 janv.'},
-   {n:'PV_AG_2024.pdf',type:"PV d'AG",conf:97,date:'28 juin'},
-   {n:'Extrait_Kbis.pdf',type:'Kbis',conf:99,date:'05 janv.'},
-   {n:'Pacte_associés.pdf',type:'Pacte',conf:94,date:'10 janv.'}]},
- {key:'biz',icon:'🤝',label:'Documents business',files:[
-   {n:'Contrat_BETA_prestation.pdf',type:'Contrat client',conf:72,date:'28 janv.'},
-   {n:'Contrat_fournisseur_ACME.pdf',type:'Contrat fourn.',conf:91,date:'03 févr.'},
-   {n:'CGV_2026.pdf',type:'CGV',conf:96,date:'02 janv.'},
-   {n:'Bail_commercial.pdf',type:'Bail',conf:88,date:'15 janv.'}]},
- {key:'rh',icon:'👥',label:'Documents RH',files:[
-   {n:'Bulletin_paie_Martin.pdf',type:'Bulletin',conf:90,date:'31 janv.'},
-   {n:'Dossier_salarié_Durand.pdf',type:'Dossier RH',conf:93,date:'20 janv.'},
-   {n:'Contrat_travail_Petit.pdf',type:'Contrat',conf:95,date:'08 janv.'}]}
-];
+<script>
+/* Documents RÉELS de l'entreprise, groupés par domaine. */
+const TREE = {{ tree|json_encode|raw }};
+{% verbatim %}
 const tree=document.getElementById('tree');
 tree.innerHTML=TREE.map((f,i)=>`
  <div class="folder">
@@ -208,6 +195,7 @@ tree.innerHTML=TREE.map((f,i)=>`
      ${f.files.map(d=>`<div class="tree-child"><span class="n">${d.n}</span><span><span class="badge navy">${d.type}</span></span><span class="conf ${d.conf>=85?'ok':'low'}">${d.conf}%</span><span style="color:var(--slate)">${d.date}</span></div>`).join('')}
    </div>
  </div>`).join('');
+if(!TREE.length)tree.innerHTML='<div style="padding:26px;text-align:center;color:var(--slate)">Aucun document déposé pour le moment.</div>';
 function setOpen(b,open){b.style.maxHeight=open?(b.scrollHeight+'px'):'0';}
 tree.querySelectorAll('.tree-row').forEach(r=>{
  const i=r.dataset.i,body=tree.querySelector(`[data-body="${i}"]`),caret=r.querySelector('.tree-caret');
