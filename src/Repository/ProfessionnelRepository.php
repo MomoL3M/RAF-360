@@ -35,4 +35,19 @@ final class ProfessionnelRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * L'annuaire complet, groupable par domaine. C'est un CATALOGUE de plateforme
+     * (partagé, non cloisonné par entreprise) : le réseau n'appartient à personne.
+     *
+     * @return Professionnel[]
+     */
+    public function findCatalogue(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.domaine', 'ASC')
+            ->addOrderBy('p.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

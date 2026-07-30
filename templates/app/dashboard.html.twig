@@ -183,7 +183,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <!-- ===== MAIN ===== -->
@@ -203,26 +203,26 @@ body{font-family:var(--sans);color:var(--ink);background:
     <div class="kpis">
       <div class="card kpi rise">
         <div class="card-h"><span class="lbl">Trésorerie dispo.</span><span class="card-ic" style="background:var(--blue-050);color:var(--blue)">$IC_WALLET$</span></div>
-        <div class="val tnum"><span data-count="131200" data-suffix=" €">0 €</span></div>
-        <svg class="spark" viewBox="0 0 220 40" preserveAspectRatio="none" data-spark="8,26 34,22 60,25 86,18 112,20 138,14 164,16 190,9 216,11"></svg>
-        <div class="foot"><span class="chip chip-amber">$IC_DOWN$ Point bas anticipé · S6</span></div>
+        <div class="val tnum"><span data-count="{{ treso.solde }}" data-suffix=" €">0 €</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">{{ treso.mois }}</div>
+        <div class="foot"><span class="chip {{ treso.sousSeuil ? 'chip-amber' : 'chip-green' }}">{{ treso.sousSeuil ? 'Sous le seuil d\'alerte' : 'Au-dessus du seuil d\'alerte' }}</span></div>
       </div>
       <div class="card kpi rise">
-        <div class="card-h"><span class="lbl">Encaissement attendu</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_IN$</span></div>
-        <div class="val tnum"><span data-count="12000" data-suffix=" €">0 €</span></div>
-        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">Client <b style="color:var(--ink)">ACME</b> · échéance 20 fév.</div>
-        <div class="foot"><span class="chip chip-blue">$IC_CLOCK$ Sous 5 jours</span></div>
+        <div class="card-h"><span class="lbl">À provisionner</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_IN$</span></div>
+        <div class="val tnum"><span data-count="{{ echeanceKpis.montant }}" data-suffix=" €">0 €</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">dont <b style="color:var(--ink)">{{ echeanceKpis.estimatif }}</b> estimatifs</div>
+        <div class="foot"><span class="chip chip-blue">$IC_CLOCK$ {{ echeanceKpis.total }} obligation{{ echeanceKpis.total > 1 ? 's' : '' }} suivie{{ echeanceKpis.total > 1 ? 's' : '' }}</span></div>
       </div>
       <div class="card kpi rise">
         <div class="card-h"><span class="lbl">Échéances · 30 j</span><span class="card-ic" style="background:var(--gold-050);color:#8a6d12">$IC_CAL$</span></div>
-        <div class="val tnum"><span data-count="4">0</span></div>
-        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">TVA · IS · DSN · comptes</div>
-        <div class="foot"><span class="chip chip-amber">1 montant estimatif</span></div>
+        <div class="val tnum"><span data-count="{{ echeanceKpis.aVenir30 }}">0</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">à préparer ce mois</div>
+        <div class="foot"><span class="chip {{ echeanceKpis.retard ? 'chip-amber' : 'chip-green' }}">{{ echeanceKpis.retard }} en retard</span></div>
       </div>
       <div class="card kpi rise">
-        <div class="card-h"><span class="lbl">Indice de confiance</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_SHIELD$</span></div>
-        <div class="val tnum"><span data-count="88" data-suffix=" %">0 %</span></div>
-        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">Analyses sourcées et datées</div>
+        <div class="card-h"><span class="lbl">Fiabilité documentaire</span><span class="card-ic" style="background:var(--green-050);color:var(--green)">$IC_SHIELD$</span></div>
+        <div class="val tnum"><span data-count="{{ documentKpis.scoreMoyen }}" data-suffix=" %">0 %</span></div>
+        <div style="font-size:12.5px;color:var(--slate);margin-top:8px">score OCR moyen · {{ documentKpis.total }} pièce{{ documentKpis.total > 1 ? 's' : '' }}</div>
         <div class="foot"><span class="chip chip-green">$IC_CHECK$ Sources officielles</span></div>
       </div>
     </div>
@@ -232,35 +232,38 @@ body{font-family:var(--sans);color:var(--ink);background:
       <div class="row">
         <div class="lead">
           <span class="a-tag"><span class="pulse"></span> Alerte prioritaire · Copilote</span>
-          <h2>Risque de trésorerie détecté sur mars</h2>
-          <p>En croisant votre échéancier fournisseurs et le <b>1er acompte d'IS (≈ 4 250 €, estimatif)</b> du 15 mars, le solde projeté tombe à <b>8 400 € en semaine 6</b>. Un encaissement client ACME de 12 000 € est attendu — mais après la date critique.</p>
+          <h2>{% if echeanceKpis.retard %}{{ echeanceKpis.retard }} obligation{{ echeanceKpis.retard > 1 ? 's' : '' }} en retard à régulariser{% else %}Aucune obligation en retard{% endif %}</h2>
+          <p>Le copilote croise vos échéances, vos flux de trésorerie et vos pièces déposées.
+            <b>{{ echeanceKpis.montant|number_format(0, ',', ' ') }} €</b> sont à provisionner sur la période, dont
+            <b>{{ echeanceKpis.estimatif }}</b> encore estimatifs. La trajectoire de trésorerie évolue de
+            <b>{{ treso.tendance >= 0 ? '+' : '' }}{{ treso.tendance }} %</b> sur la série observée.</p>
           <div class="scen">
             <div class="s">
-              <h4>Décaler l'acompte via échéancier</h4>
-              <div class="li pro"><span>▲</span><span>Préserve la trésorerie de mars</span></div>
-              <div class="li pro"><span>▲</span><span>Démarche en ligne, rapide</span></div>
-              <div class="li con"><span>▼</span><span>Majoration possible si non encadré</span></div>
+              <h4>Traiter les obligations en priorité</h4>
+              <div class="li pro"><span>▲</span><span>Évite majorations et pénalités</span></div>
+              <div class="li pro"><span>▲</span><span>Montants déjà préparés</span></div>
+              <div class="li con"><span>▼</span><span>Mobilise de la trésorerie immédiatement</span></div>
             </div>
             <div class="s">
-              <h4>Affacturage de la facture ACME</h4>
-              <div class="li pro"><span>▲</span><span>Cash disponible avant l'échéance</span></div>
-              <div class="li pro"><span>▲</span><span>Sécurise le mois</span></div>
-              <div class="li con"><span>▼</span><span>Coût de financement (~1,5 %)</span></div>
+              <h4>Fiabiliser les pièces manquantes</h4>
+              <div class="li pro"><span>▲</span><span>Analyses plus fiables</span></div>
+              <div class="li pro"><span>▲</span><span>Prépare la clôture</span></div>
+              <div class="li con"><span>▼</span><span>Demande une action de votre part</span></div>
             </div>
           </div>
-          <div class="reco"><b>Recommandation :</b> relancer ACME dès maintenant ; si non réglé au 5 mars, activer l'affacturage plutôt que décaler l'IS.</div>
+          <div class="reco"><b>Recommandation :</b> régularisez d'abord les obligations en retard, puis confirmez les montants estimatifs avec votre expert-comptable.</div>
           <div class="a-cta">
-            <button class="btn btn-gold">$IC_ARR$ Ouvrir la trésorerie</button>
-            <button class="btn btn-ghost">Voir l'échéance IS</button>
+            <a class="btn btn-gold" href="{{ path('app_treasury') }}">$IC_ARR$ Ouvrir la trésorerie</a>
+            <a class="btn btn-ghost" href="{{ path('app_calendar') }}">Voir les échéances</a>
           </div>
-          <div class="src">Croisement : relevés bancaires · échéancier · calendrier fiscal · <b style="color:#ffd98a">confiance 88 %</b></div>
+          <div class="src">Croisement : flux enregistrés · échéancier · pièces déposées · <b style="color:#ffd98a">fiabilité documentaire {{ documentKpis.scoreMoyen }} %</b></div>
         </div>
         <div class="aside">
           <div class="gaugebox">
-            <div class="conf-lbl">Confiance de l'analyse</div>
-            <div class="gauge" data-gauge="88" data-color="#e0b53d">
+            <div class="conf-lbl">Fiabilité documentaire</div>
+            <div class="gauge" data-gauge="{{ documentKpis.scoreMoyen }}" data-color="#e0b53d">
               <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12"/><circle class="arc" cx="60" cy="60" r="52" fill="none" stroke="#e0b53d" stroke-width="12" stroke-linecap="round" transform="rotate(-90 60 60)"/></svg>
-              <div class="pct"><b class="tnum" data-count="88" data-suffix="%" style="color:#fff">0%</b><small style="color:#9fb1d4">vérifié</small></div>
+              <div class="pct"><b class="tnum" data-count="{{ documentKpis.scoreMoyen }}" data-suffix="%" style="color:#fff">0%</b><small style="color:#9fb1d4">score OCR</small></div>
             </div>
           </div>
         </div>
@@ -278,7 +281,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       </div>
       <div class="card rise">
         <div class="card-h"><span class="lbl">Répartition des charges</span><span class="card-ic" style="background:var(--navy-900);color:var(--gold-400)">$IC_CHART$</span></div>
-        <div style="font-size:12.5px;color:var(--slate);margin-bottom:18px">Ventilation des décaissements du mois · démonstration</div>
+        <div style="font-size:12.5px;color:var(--slate);margin-bottom:18px">Vos obligations chiffrées, du montant le plus élevé au plus faible</div>
         <div id="bars" style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;height:180px"></div>
       </div>
     </div>
@@ -300,9 +303,15 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
+<script>
+/* ===== Données RÉELLES de l'entreprise connectée ===== */
+const ECH = {{ echeances|json_encode|raw }};
+const ACTS = {{ actions|json_encode|raw }};
+const BARS = {{ charges|json_encode|raw }};
+const SERIE = {{ serie|json_encode|raw }};
+{% verbatim %}
 /* ---------- icônes ---------- */
 const I={
  wallet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14h2"/></svg>',
@@ -325,34 +334,21 @@ _shell.innerHTML=_shell.innerHTML
  .replace(/\$IC_CLOCK\$/g,I.clock).replace(/\$IC_DOC\$/g,I.doc).replace(/\$IC_BOLT\$/g,I.bolt)
  .replace(/\$IC_SPARK\$/g,I.spark).replace(/\$IC_ARR\$/g,I.arr).replace(/\$IC_CHART\$/g,I.chart);
 
-/* ---------- données démo ---------- */
-const ECH=[
- {t:'TVA — CA3 janvier',m:'≈ 6 200 €',me:0,d:'12 fév.',st:'ok'},
- {t:'Relance client ACME',m:'12 000 €',me:0,d:'20 fév.',st:'warn'},
- {t:'1er acompte d\'IS',m:'≈ 4 250 €',me:1,d:'15 mars',st:'warn'},
- {t:'DSN mensuelle',m:'',me:0,d:'05 mars',st:'ok'},
- {t:'Approbation des comptes',m:'',me:0,d:'30 juin',st:'ok'}
-];
-const ACTS=[
- {c:'#d64545',t:'Relancer ACME (12 000 €)',m:'Encaissement critique avant le 5 mars'},
- {c:'#e0b53d',t:'Préparer l\'acompte d\'IS',m:'Montant estimatif à confirmer'},
- {c:'#2c6fb0',t:'Compléter 3 pièces manquantes',m:'Score de confiance sous le seuil'}
-];
+/* ---------- veille : uniquement des dates réglementaires VÉRIFIÉES ---------- */
 const VEI=[
- {c:'#2c6fb0',t:'Fiscal',b:'Acompte d\'IS : rappel des modalités de modulation via votre espace professionnel.'},
- {c:'#1f9d6b',t:'Social',b:'DSN : aucune anomalie détectée sur la dernière déclaration.'},
- {c:'#c9a227',t:'Juridique',b:'Approbation des comptes à prévoir dans les 6 mois suivant la clôture.'}
+ {c:'#2c6fb0',t:'Facturation électronique',b:'Réception des factures électroniques obligatoire au 1er septembre 2026.'},
+ {c:'#c9a227',t:'Facturation électronique',b:'Émission obligatoire pour les TPE-PME au 1er septembre 2027.'}
 ];
 const ech=document.getElementById('ech');
-ECH.forEach(e=>{const dcl=e.st==='warn'?'warn':(e.st==='due'?'due':'');ech.insertAdjacentHTML('beforeend',
- `<div class="row-item"><span class="t">${e.t}${e.m?` <small>· <b class="amount" style="color:${e.me?'#8a6d12':'#64748b'}">${e.m}</b></small>`:''}</span><span class="date-pill ${dcl}">${e.d}</span></div>`);});
+if(!ECH.length)ech.innerHTML='<div style="padding:14px 0;color:var(--slate);font-size:13px">Aucune échéance enregistrée.</div>';
+ECH.forEach(e=>{ech.insertAdjacentHTML('beforeend',
+ `<div class="row-item"><span class="t">${e.t}${e.montant?` <small>· <b class="amount" style="color:${e.mt==='estimatif'?'#8a6d12':'#64748b'}">${e.montant}</b></small>`:''}</span>`+
+ `<span class="date-pill ${e.overdue?'warn':''}">${e.d} ${e.m}</span></div>`);});
 const acts=document.getElementById('acts');
-ACTS.forEach(a=>acts.insertAdjacentHTML('beforeend',`<div class="act"><span class="stripe" style="background:${a.c}"></span><div><div class="t">${a.t}</div><div class="m">${a.m}</div></div></div>`));
+if(!ACTS.length)acts.innerHTML='<div style="padding:14px 0;color:var(--slate);font-size:13px">Aucune action en attente.</div>';
+ACTS.forEach(a=>acts.insertAdjacentHTML('beforeend',`<div class="act"><span class="stripe" style="background:${a.stripe}"></span><div><div class="t">${a.t}</div><div class="m">${a.sub}</div></div></div>`));
 const vv=document.getElementById('veille');
-VEI.forEach(v=>vv.insertAdjacentHTML('beforeend',`<div class="vcard" style="--c:${v.c}"><span class="vt">${I.spark} Veille ${v.t}</span><div class="vb">${v.b}</div></div>`));
-
-/* ---------- bars (répartition) ---------- */
-const BARS=[['Fournisseurs',18200,'#14306b'],['Salaires',22500,'#2c6fb0'],['Fiscal',6200,'#c9a227'],['Social',4800,'#1f9d6b'],['Autres',2100,'#8fbbee']];
+VEI.forEach(v=>vv.insertAdjacentHTML('beforeend',`<div class="vcard" style="--c:${v.c}"><span class="vt">${I.spark} ${v.t}</span><div class="vb">${v.b}</div></div>`));
 const bmax=Math.max(...BARS.map(b=>b[1]));
 const barsEl=document.getElementById('bars');
 BARS.forEach(b=>{const hpx=Math.round(b[1]/bmax*120);barsEl.insertAdjacentHTML('beforeend',
@@ -378,24 +374,27 @@ function drawSpark(svg){const pts=svg.dataset.spark.split(' ').map(s=>s.split(',
 
 /* ---------- forecast chart ---------- */
 function forecast(){const svg=document.getElementById('fcast');const W=640,H=240,pad=16;
- // valeurs (k€) : réalisé 4 pts, prévisionnel 9 pts, creux à S6 puis reprise
- const real=[131,120,112,96],prev=[96,70,42,18,8.4,26,48,72,95];
- const all=real.concat(prev.slice(1));const n=all.length;
- const max=140,min=0;const X=i=>pad+i*((W-2*pad)/(n-1));const Y=v=>H-24-((v-min)/(max-min))*(H-52);
+ // Série RÉELLE (k€) : réalisé jusqu'à SERIE.realIdx, prévisionnel ensuite.
+ const all=SERIE.sol;const n=all.length;
+ if(n<2){svg.innerHTML='<text x="16" y="120" font-size="12" fill="#94a3b8">Aucun flux de trésorerie enregistré.</text>';return;}
+ const max=Math.max(...all)*1.15||140,min=0;
+ const X=i=>pad+i*((W-2*pad)/(n-1));const Y=v=>H-24-((v-min)/(max-min))*(H-52);
  const pt=all.map((v,i)=>[X(i),Y(v)]);
  const line=a=>'M'+a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L');
- const realPts=pt.slice(0,4),prevPts=pt.slice(3);
+ const cut=Math.min(SERIE.realIdx,n-1);
+ const realPts=pt.slice(0,cut+1),prevPts=pt.slice(cut);
  // grille
  let g='';for(let k=0;k<=4;k++){const y=24+k*((H-52)/4);g+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#eef1f7" stroke-width="1"/><text x="0" y="${y+3}" font-size="9" fill="#94a3b8">${Math.round(max-k*max/4)}k</text>`;}
  const areaR=line(realPts)+` L${realPts[realPts.length-1][0]},${H-24} L${realPts[0][0]},${H-24} Z`;
- const lo=pt[8];// S6 creux (index 8)
+ // point le plus bas de la série (repère de vigilance)
+ const loIdx=all.indexOf(Math.min(...all)),lo=pt[loIdx],loVal=all[loIdx];
  svg.innerHTML=`<defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14306b" stop-opacity=".20"/><stop offset="1" stop-color="#14306b" stop-opacity="0"/></linearGradient></defs>`+
   g+
   `<path d="${areaR}" fill="url(#fg)"/>`+
   `<path d="${line(realPts)}" fill="none" stroke="#14306b" stroke-width="3" stroke-linecap="round" pathLength="1" class="ln" style="stroke-dasharray:1;stroke-dashoffset:1"/>`+
   `<path d="${line(prevPts)}" fill="none" stroke="#c9a227" stroke-width="3" stroke-dasharray="1" stroke-linecap="round" pathLength="1" class="ln2" style="stroke-dashoffset:1"/>`+
   `<circle class="lo-marker" cx="${lo[0].toFixed(1)}" cy="${lo[1].toFixed(1)}" r="5" style="opacity:0;transition:opacity .4s .9s"/>`+
-  `<text x="${lo[0].toFixed(1)}" y="${(lo[1]-12).toFixed(1)}" font-size="11" font-weight="700" fill="#d64545" text-anchor="middle" style="opacity:0;transition:opacity .4s 1s">8 400 € · S6</text>`;
+  `<text x="${lo[0].toFixed(1)}" y="${(lo[1]-12).toFixed(1)}" font-size="11" font-weight="700" fill="#d64545" text-anchor="middle" style="opacity:0;transition:opacity .4s 1s">${loVal} k€ · ${SERIE.lab[loIdx]||''}</text>`;
  requestAnimationFrame(()=>{const a=svg.querySelector('.ln'),b=svg.querySelector('.ln2');
   a.style.transition='stroke-dashoffset 1.1s ease';a.style.strokeDashoffset='0';
   b.style.transition='stroke-dashoffset 1.1s ease .9s';b.style.strokeDashoffset='0';

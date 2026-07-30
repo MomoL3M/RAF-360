@@ -140,7 +140,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -154,9 +154,9 @@ body{font-family:var(--sans);color:var(--ink);background:
 
     <section class="alert rise">
       <span class="a-tag"><span class="pulse"></span> Suggestion de routage · Copilote</span>
-      <h2>Un avocat en droit des affaires est recommandé</h2>
-      <p>La clause de responsabilité du contrat BÉTA sort de vos usages habituels. Le copilote suggère <b>Me Sophie Lambert</b> (droit des sociétés, dispo sous 72 h) et a préparé la sélection de documents à partager.</p>
-      <div class="a-cta"><button class="btn btn-ghost">Voir le dossier BÉTA</button><button class="btn btn-gold" id="ctaRdv">Prendre rendez-vous</button></div>
+      <h2>Orientation vers le bon professionnel habilité</h2>
+      <p>Sur un sujet réglementé, le copilote prépare le dossier et vous oriente vers le profil compétent : il ne rend jamais l'avis à sa place. <b>Le réseau de professionnels est en cours de constitution</b> — les profils ci-dessous décrivent les compétences qui seront mobilisables. Aucune commission n'est prélevée sur les honoraires.</p>
+      <div class="a-cta"><a class="btn btn-ghost" href="{{ path('app_documents') }}">Voir mes documents</a></div>
     </section>
 
     <div class="grid-half">
@@ -169,26 +169,45 @@ body{font-family:var(--sans);color:var(--ink);background:
 
       <div class="card rise">
         <div class="card-h"><span class="lbl">Prise de rendez-vous</span></div>
+        {% if rendezVous is not empty %}
+          <div style="margin-bottom:14px">
+            {% for r in rendezVous %}
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--hairline);border-radius:12px;margin-bottom:8px">
+                <div><div style="font-size:13.5px;font-weight:700;color:var(--navy-900)">{{ r.pro }}</div>
+                  <div style="font-size:12px;color:var(--slate);margin-top:2px">{{ r.creneau }}</div></div>
+                <span class="badge {{ r.confirme ? 'green' : 'gold' }}">{{ r.confirme ? 'Confirmé' : 'À confirmer' }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
         <div id="rdv">
-          <div class="empty"><div style="font-size:14px;color:var(--ink);font-weight:600">Sélectionnez un professionnel</div>
-            <div style="font-size:12.5px;color:var(--slate);margin-top:6px">Choisissez un domaine à gauche puis « Rendez-vous » pour ouvrir un créneau et une salle de décision.</div></div>
+          <div class="empty"><div style="font-size:14px;color:var(--ink);font-weight:600">Sélectionnez un profil</div>
+            <div style="font-size:12.5px;color:var(--slate);margin-top:6px">Choisissez un domaine à gauche puis « Rendez-vous » pour réserver un créneau et préparer le partage.</div></div>
         </div>
         <div style="margin-top:14px;font-size:12px;color:var(--slate)">🔒 Chaque partage est limité dans le temps, révocable et journalisé (qui a vu quoi, quand). Aucune commission sur les honoraires du professionnel.</div>
       </div>
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
-const PRO=[
- {dom:'Expertise comptable',pros:[{n:'Cabinet Durand & Associés',r:'Expert-comptable · CAC',dispo:'Sous 48h',init:'DA'},{n:'Cabinet Novéo Audit',r:'Expert-comptable',dispo:'Sous 4j',init:'NA'}]},
- {dom:'Droit des affaires',pros:[{n:'Me Sophie Lambert',r:'Avocate — droit des sociétés',dispo:'Sous 72h',init:'SL'},{n:'Me Karim Benali',r:'Avocat — contrats & contentieux',dispo:'Sous 5j',init:'KB'}]},
- {dom:'Fiscalité',pros:[{n:'Cabinet FiscaConseil',r:'Fiscaliste',dispo:'Sous 5j',init:'FC'}]},
- {dom:'Paie & social',pros:[{n:'PaieExpert Services',r:'Gestionnaire paie / DSN',dispo:'Sous 48h',init:'PE'}]},
- {dom:'Financement & DAF externe',pros:[{n:'Hélène Roux',r:'DAF externalisée à temps partagé',dispo:'Sous 1 sem.',init:'HR'}]}
-];
-const SLOTS=['Mar. 11 · 09:00','Mar. 11 · 14:30','Mer. 12 · 10:00','Jeu. 13 · 16:00','Ven. 14 · 11:30','Ven. 14 · 15:00'];
+<script>
+/* Catalogue de profils (partagé) et rendez-vous RÉELS de l'entreprise.
+   Aucun professionnel nommé n'est inventé : le réseau est en cours de constitution. */
+const CATALOGUE = {{ catalogue|json_encode|raw }};
+const RDV_PRIS = {{ rendezVous|json_encode|raw }};
+{% verbatim %}
+/* Regroupement par domaine, en conservant l'ordre reçu du serveur. */
+const PRO=(()=>{const map=new Map();
+ CATALOGUE.forEach(p=>{if(!map.has(p.domaine))map.set(p.domaine,[]);
+  map.get(p.domaine).push({n:p.nom,r:p.specialite,dispo:p.delai,init:p.nom.slice(0,2).toUpperCase()});});
+ return [...map].map(([dom,pros])=>({dom,pros}));})();
+/* Créneaux proposés : jours ouvrés à venir (affordance d'interface, non contractuels). */
+const SLOTS=(()=>{const J=['Dim.','Lun.','Mar.','Mer.','Jeu.','Ven.','Sam.'],H=['09:00','14:30'],out=[];
+ let d=new Date(),n=0;while(out.length<6&&n<14){d=new Date(d.getTime()+864e5);n++;
+  if(d.getDay()===0||d.getDay()===6)continue;
+  H.forEach(h=>{if(out.length<6)out.push(`${J[d.getDay()]} ${String(d.getDate()).padStart(2,'0')} · ${h}`);});}
+ return out;})();
 const pros=document.getElementById('pros'),rdv=document.getElementById('rdv');
 pros.innerHTML=PRO.map((d,i)=>`
  <div class="dom">
@@ -206,13 +225,13 @@ function pick(name){selPro=name;selSlot=null;
    <div class="dh">Créneaux disponibles</div>
    <div class="slots">${SLOTS.map((s,k)=>`<div class="slot" data-k="${k}">${s}</div>`).join('')}</div>
    <div style="margin-top:14px;display:flex;gap:8px"><button class="btn-rdv" id="confirm" disabled style="opacity:.5">Confirmer le rendez-vous</button><button class="slot" id="change" style="padding:8px 12px">Changer</button></div>
-   <div id="ok" style="margin-top:10px;font-size:12px;color:var(--green);display:none">✓ Le copilote joindra le dossier BÉTA (partage limité à 7 jours, révocable).</div>`;
+   <div id="ok" style="margin-top:10px;font-size:12px;color:var(--green);display:none">✓ Le copilote joindra les pièces que vous sélectionnez (partage limité dans le temps, révocable).</div>`;
  rdv.querySelectorAll('.slot[data-k]').forEach(s=>s.addEventListener('click',()=>{selSlot=+s.dataset.k;rdv.querySelectorAll('.slot[data-k]').forEach(x=>x.classList.remove('sel'));s.classList.add('sel');const c=document.getElementById('confirm');c.disabled=false;c.style.opacity=1;document.getElementById('ok').style.display='block';}));
- document.getElementById('change').addEventListener('click',()=>{rdv.innerHTML='<div class="empty"><div style="font-size:14px;color:var(--ink);font-weight:600">Sélectionnez un professionnel</div><div style="font-size:12.5px;color:var(--slate);margin-top:6px">Choisissez un domaine à gauche puis « Rendez-vous ».</div></div>';});
+ document.getElementById('change').addEventListener('click',()=>{rdv.innerHTML='<div class="empty"><div style="font-size:14px;color:var(--ink);font-weight:600">Sélectionnez un profil</div><div style="font-size:12.5px;color:var(--slate);margin-top:6px">Choisissez un domaine à gauche puis « Rendez-vous ».</div></div>';});
  document.getElementById('confirm').addEventListener('click',()=>{if(selSlot!==null)document.getElementById('ok').innerHTML='✓ Rendez-vous confirmé (démonstration) — salle de décision et partage préparés par le copilote.';});
 }
 pros.addEventListener('click',e=>{const b=e.target.closest('.btn-rdv');if(b&&b.dataset.n){pick(b.dataset.n);document.getElementById('rdv').scrollIntoView({behavior:'smooth',block:'nearest'});}});
-document.getElementById('ctaRdv').addEventListener('click',()=>pick('Me Sophie Lambert'));
+if(!PRO.length)pros.innerHTML='<div style="padding:22px;text-align:center;color:var(--slate);font-size:14px">Réseau en cours de constitution.</div>';
 const seen=new WeakSet();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting||seen.has(e.target))return;seen.add(e.target);e.target.classList.add('in');}),{threshold:.2});
 document.querySelectorAll('.rise').forEach((c,i)=>{c.style.transitionDelay=(Math.min(i,6)*55)+'ms';io.observe(c);});

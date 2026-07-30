@@ -135,7 +135,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}" class="on">◆ Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -148,8 +148,13 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
 
     <section class="alert rise">
-      <span class="a-tag"><span class="pulse"></span> Le copilote a repéré 3 choses aujourd'hui</span>
-      <p style="margin-top:11px">1) Trésorerie sous tension en février (−55 k€). 2) TVA de décembre en retard (3 420 €). 3) Contrat BÉTA à faire relire par un avocat.</p>
+      <span class="a-tag"><span class="pulse"></span> Ce que le copilote suit sur votre dossier</span>
+      <p style="margin-top:11px">
+        {{ echeanceKpis.total }} obligation{{ echeanceKpis.total > 1 ? 's' : '' }} suivie{{ echeanceKpis.total > 1 ? 's' : '' }}
+        (dont <b>{{ echeanceKpis.retard }} en retard</b>) · <b>{{ echeanceKpis.montant|number_format(0, ',', ' ') }} €</b> à provisionner ·
+        {{ actionKpis.total }} action{{ actionKpis.total > 1 ? 's' : '' }} ouverte{{ actionKpis.total > 1 ? 's' : '' }}
+        {%- if actionKpis.escalade %}, dont {{ actionKpis.escalade }} à orienter vers un professionnel{% endif %}.
+      </p>
       <div class="a-cta"><a class="btn btn-ghost" href="{{ path('app_treasury') }}">Trésorerie</a><a class="btn btn-ghost" href="{{ path('app_calendar') }}">Calendrier</a><a class="btn btn-ghost" href="{{ path('app_dataroom') }}">Data room</a></div>
     </section>
 
@@ -163,14 +168,15 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
+<script>
+/* Le copilote n'est pas encore relié à un modèle : l'amorce reprend les vrais
+   indicateurs du dossier et annonce honnêtement la limite (§18.3, §2.10). */
 const CHAT=[
- {role:'ia',t:"Bonjour. Je surveille en continu votre dossier : échéances, trésorerie, contrats, paie, et je fais une veille juridique, fiscale, sectorielle et comptable. Je vous alerte et je vous propose des scénarios. Les sujets réglementés sont orientés vers un professionnel."},
- {role:'user',t:"Pourquoi ma trésorerie baisse à partir de décembre ?"},
- {role:'ia',t:"Sur la période prévisionnelle (déc.→févr.), vos décaissements passent de ~53 k€ à ~92 k€/mois tandis que les encaissements progressent moins vite. Deux leviers : étaler un décaissement fournisseur, ou activer une ligne court terme.",src:"Source : relevés bancaires · échéancier fournisseurs · confiance 88% · simulation à valider"}
+ {role:'ia',t:{{ ("Bonjour. Je suis le copilote de " ~ entreprise.raisonSociale ~ ". Je suis actuellement " ~ echeanceKpis.total ~ " obligation(s) et " ~ actionKpis.total ~ " action(s) sur votre dossier. L'assistance conversationnelle n'est pas encore activée : les analyses affichées dans les autres écrans sont calculées sur vos données réelles.")|json_encode|raw }}}
 ];
+{% verbatim %}
 const box=document.getElementById('chat');
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function bubble(m){return `<div class="msg ${m.role}"><div class="bubble">${esc(m.t)}${m.src?`<div class="src">${esc(m.src)}</div>`:''}</div></div>`;}
@@ -181,7 +187,7 @@ function send(){const v=input.value.trim();if(!v)return;
  CHAT.push({role:'user',t:v});input.value='';paint();
  box.insertAdjacentHTML('beforeend','<div class="msg ia" id="typing"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>');box.scrollTop=box.scrollHeight;
  setTimeout(()=>{const tp=document.getElementById('typing');if(tp)tp.remove();
-  CHAT.push({role:'ia',t:"Ceci est une maquette : la réponse réelle serait sourcée, accompagnée d'un score de confiance et, si le sujet est réglementé, orientée vers le professionnel adapté avec proposition de scénarios.",src:"Réponse ancrée sur votre dossier · à valider"});paint();},900);}
+  CHAT.push({role:"ia",t:"L'assistance conversationnelle n'est pas encore activée sur votre espace. Les analyses des autres écrans sont calculées sur vos données réelles ; pour un sujet réglementé, la data room vous oriente vers un professionnel habilité.",src:"Fonctionnalité à venir"});paint();},900);}
 document.getElementById('send').addEventListener('click',send);
 input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
 const seen=new WeakSet();

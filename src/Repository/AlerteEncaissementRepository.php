@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\AlerteEncaissement;
+use App\Entity\Entreprise;
 use App\Enum\StatutEncaissement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,6 +32,21 @@ final class AlerteEncaissementRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('a')
             ->andWhere('a.statut = :statut')
             ->setParameter('statut', StatutEncaissement::EN_RETARD)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Les encaissements attendus d'une entreprise, montant décroissant (§16.1).
+     *
+     * @return AlerteEncaissement[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->orderBy('a.montantCentimes', 'DESC')
             ->getQuery()
             ->getResult();
     }

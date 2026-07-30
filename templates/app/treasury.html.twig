@@ -150,7 +150,7 @@ body{font-family:var(--sans);color:var(--ink);background:
       <a href="{{ path('app_assistant') }}">Copilote IA</a>
     </nav>
     <div class="spacer"></div>
-    <div class="who"><span class="av">ML</span><div><span>Ma société</span><small>Dirigeant</small></div></div>
+    <div class="who"><span class="av">{{ entreprise.raisonSociale|slice(0, 2)|upper }}</span><div><span>{{ entreprise.raisonSociale }}</span><small>{{ utilisateur.prenom }} · Dirigeant</small></div></div>
   </aside>
 
   <main class="main">
@@ -164,25 +164,28 @@ body{font-family:var(--sans);color:var(--ink);background:
 
     <!-- KPI -->
     <div class="kpis">
-      <div class="card kpi navy rise"><div class="top">Solde de trésorerie disponible</div><div class="val tnum"><span data-count="131200" data-suffix=" €">0 €</span></div><div class="sub">3 comptes bancaires</div></div>
-      <div class="card kpi green rise"><div class="top">Encaissements du mois</div><div class="val tnum"><span data-count="67000" data-suffix=" €">0 €</span></div><div class="sub">Novembre 2025</div></div>
-      <div class="card kpi red rise"><div class="top">Décaissements du mois</div><div class="val tnum"><span data-count="56000" data-suffix=" €">0 €</span></div><div class="sub">Novembre 2025</div></div>
+      <div class="card kpi navy rise"><div class="top">Solde de trésorerie disponible</div><div class="val tnum"><span data-count="{{ kpis.solde }}" data-suffix=" €">0 €</span></div><div class="sub">dernier mois réalisé</div></div>
+      <div class="card kpi green rise"><div class="top">Encaissements du mois</div><div class="val tnum"><span data-count="{{ kpis.encaissements }}" data-suffix=" €">0 €</span></div><div class="sub">{{ kpis.mois }}</div></div>
+      <div class="card kpi red rise"><div class="top">Décaissements du mois</div><div class="val tnum"><span data-count="{{ kpis.decaissements }}" data-suffix=" €">0 €</span></div><div class="sub">{{ kpis.mois }}</div></div>
     </div>
 
     <!-- Alerte IA (trajectoire en hausse) -->
     <section class="alert rise">
       <span class="a-tag"><span class="pulse"></span> Anticipation · Copilote</span>
-      <h2>Trajectoire de trésorerie en amélioration</h2>
-      <p>Sur les 12 mois, les <b>encaissements dépassent les décaissements</b> chaque mois : le solde projeté progresse de <b>131 k€ (nov.) à 176 k€ (fév.)</b>. Le copilote confirme une dynamique saine, sans point bas critique sur la période.</p>
-      <div class="reco"><b>Recommandation :</b> sécuriser l'excédent (placement court terme ou remboursement anticipé) tout en conservant un matelas ≥ 60 k€ ; réévaluer à la prochaine grosse échéance fiscale.</div>
-      <div class="src">Prévision 13 semaines · échéancier fournisseurs · <b style="color:#9be9c6">confiance 85 %</b></div>
+      <h2>{% if kpis.tendance >= 0 %}Trajectoire de trésorerie en amélioration{% else %}Trajectoire de trésorerie à surveiller{% endif %}</h2>
+      <p>Sur la période observée, le solde évolue de <b>{{ kpis.tendance >= 0 ? '+' : '' }}{{ kpis.tendance }} %</b>.
+        {% if kpis.sousSeuil %}Le dernier solde réalisé passe <b>sous le seuil d'alerte de 40 000 €</b> : sécurisez vos encaissements en priorité.
+        {% else %}Aucun passage sous le seuil d'alerte de 40 000 € sur le dernier mois réalisé.{% endif %}
+        {% if totalAttendu %}<b>{{ totalAttendu|number_format(0, ',', ' ') }} €</b> d'encaissements sont attendus.{% endif %}</p>
+      <div class="reco"><b>Recommandation :</b> confirmez les encaissements attendus et conservez un matelas de sécurité avant la prochaine grosse échéance fiscale.</div>
+      <div class="src">Calculé sur vos flux enregistrés · simulation à valider, non comptable</div>
     </section>
 
     <!-- Graphique -->
     <div class="card rise">
       <div class="card-h">
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <span class="chip">📅 Mars 2025 – Févr. 2026</span>
+          <span class="chip">📅 {{ serie.mois|first|default('—') }} – {{ serie.mois|last|default('—') }}</span>
           <span class="chip">🏦 Tous les comptes</span>
         </div>
         <div style="display:flex;gap:16px;flex-wrap:wrap">
@@ -207,30 +210,23 @@ body{font-family:var(--sans);color:var(--ink);background:
     </div>
   </main>
 </div>
-<div class="demo-badge">Maquette premium · données de démonstration</div>
+<div class="demo-badge">Données de démonstration · compte bac à sable</div>
 
-<script>{% verbatim %}
-/* ===== données démo (k€), en hausse ===== */
-const LAB=['Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc','Jan','Fév'];
-const YR =['25','25','25','25','25','25','25','25','25','25','26','26'];
-const SOL=[58,66,73,81,88,96,105,116,127,141,158,176];   // solde, monte
-const ENC=[46,49,52,55,57,60,63,67,71,76,82,90];         // encaissements
-const DEC=[39,42,45,47,49,51,54,56,60,63,66,72];         // décaissements
-const REAL=8;                                            // 0..7 réalisé, 8..11 prévisionnel (Nov = dernier réalisé index 8? -> réalisé jusqu'à index 8)
-const realIdx=8;
-
-const CAT_E=[['Ventes / prestations',.78],['Subventions & aides',.09],['Autres encaissements',.13]];
-const CAT_S=[['Salaires & charges',.46],['Fournisseurs',.34],['Fiscalité & prêts',.20]];
-
-const ALERTS=[
- {c:'Client ACME',m:'12 000 €',mode:'Virement',d:'20 fév. 2026',st:'warn'},
- {c:'Client BÊTA',m:'6 400 €',mode:'Prélèvement',d:'02 mars 2026',st:'ok'},
- {c:'Client GAMMA',m:'3 900 €',mode:'Chèque',d:'11 mars 2026',st:'ok'}
-];
+<script>
+/* ===== Série de trésorerie RÉELLE de l'entreprise (montants en k€) ===== */
+const LAB = {{ serie.lab|json_encode|raw }};
+const YR  = {{ serie.yr|json_encode|raw }};
+const SOL = {{ serie.sol|json_encode|raw }};
+const ENC = {{ serie.enc|json_encode|raw }};
+const DEC = {{ serie.dec|json_encode|raw }};
+const realIdx = {{ serie.realIdx }};
+const ALERTS = {{ encaissements|json_encode|raw }};
+{% verbatim %}
 const al=document.getElementById('alerts');
+if(!ALERTS.length){al.innerHTML='<div style="padding:18px;text-align:center;color:var(--slate);font-size:14px">Aucun encaissement attendu enregistré.</div>';}
 ALERTS.forEach(a=>al.insertAdjacentHTML('beforeend',
- `<div class="al ${a.st}"><div><div class="c">${a.c} — <span class="amt">${a.m}</span></div><div class="m">${a.mode} · échéance ${a.d}</div></div>`+
- `<span class="badge2">${a.st==='warn'?'En retard':'Attendu'}</span></div>`));
+ `<div class="al ${a.retard?'warn':'ok'}"><div><div class="c">${a.tiers} — <span class="amt">${a.montant}</span></div><div class="m">${a.statut}</div></div>`+
+ `<span class="badge2">${a.statut}</span></div>`));
 
 /* ===== count-up ===== */
 function countUp(el){const to=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1300;
@@ -305,15 +301,14 @@ function pick(i){selected=(selected===i)?null:i;renderDetail();}
 function renderDetail(){
  svg.querySelectorAll('.pt').forEach(p=>p.setAttribute('r',(+p.dataset.i===selected)?'6.5':'4.5'));
  if(selected===null){detail.className='detail-empty';detail.innerHTML='👆 Cliquez sur un point de la courbe pour afficher le détail du mois (encaissements / décaissements).';return;}
- const i=selected,real=i<=realIdx,debut=i===0?40:SOL[i-1],net=ENC[i]-DEC[i];
- const rows=(cat,val,cls)=>cat.map(x=>`<div class="drow"><span class="k">${x[0]}</span><span class="v" style="color:var(--${cls})">${Math.round(val*x[1])} k€</span></div>`).join('');
+ const i=selected,real=i<=realIdx,debut=i===0?SOL[0]:SOL[i-1],net=ENC[i]-DEC[i];
  detail.className='detail';
  detail.innerHTML=
   `<div class="detail-h"><div class="t">${LAB[i]} 20${YR[i]} — détail ${real?'(réalisé)':'(prévisionnel)'}</div>`+
   `<span class="badge ${real?'green':'gold'}">${real?'Trésorerie fonctionnelle':'Trésorerie prévisionnelle'}</span></div>`+
   `<div class="detail-grid">`+
-    `<div><div class="dh enc">Encaissements — ${ENC[i]} k€</div>${rows(CAT_E,ENC[i],'green')}</div>`+
-    `<div><div class="dh dec">Décaissements — ${DEC[i]} k€</div>${rows(CAT_S,DEC[i],'red')}</div>`+
+    `<div><div class="dh enc">Encaissements — ${ENC[i]} k€</div><div class="drow"><span class="k">Total encaissé sur le mois</span><span class="v" style="color:var(--green)">${ENC[i]} k€</span></div></div>`+
+    `<div><div class="dh dec">Décaissements — ${DEC[i]} k€</div><div class="drow"><span class="k">Total décaissé sur le mois</span><span class="v" style="color:var(--red)">${DEC[i]} k€</span></div></div>`+
   `</div>`+
   `<div class="dtot"><span class="k" style="color:var(--slate)">Solde net du mois · début ${debut} k€ → fin</span>`+
    `<span class="v" style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'+':''}${net} k€ · ${SOL[i]} k€</span></div>`;

@@ -33,9 +33,25 @@ class RendezVous
     #[ORM\Column]
     private bool $confirme = false;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private Entreprise $entreprise;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEntreprise(): Entreprise
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(Entreprise $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
     }
 
     public function getProfessionnel(): Professionnel

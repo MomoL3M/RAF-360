@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Entreprise;
 use App\Entity\Professionnel;
 use App\Entity\RendezVous;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -31,6 +32,24 @@ final class RendezVousRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->andWhere('r.professionnel = :pro')
             ->setParameter('pro', $professionnel)
+            ->orderBy('r.creneau', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Les rendez-vous d'une entreprise, du plus proche au plus lointain (§16.1).
+     * Le professionnel est chargé en jointure (évite les requêtes N+1, §8.5).
+     *
+     * @return RendezVous[]
+     */
+    public function findForEntreprise(Entreprise $entreprise): array
+    {
+        return $this->createQueryBuilder('r')
+            ->addSelect('p')
+            ->join('r.professionnel', 'p')
+            ->andWhere('r.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
             ->orderBy('r.creneau', 'ASC')
             ->getQuery()
             ->getResult();
