@@ -22,15 +22,8 @@ use App\Enum\StatutEcheance;
 use App\Enum\StatutEncaissement;
 use App\Enum\StatutFacture;
 use App\Enum\TypeMontant;
-use App\Repository\ActionRepository;
-use App\Repository\AlerteEncaissementRepository;
-use App\Repository\DocumentRepository;
-use App\Repository\EcheanceRepository;
 use App\Repository\EntrepriseRepository;
-use App\Repository\FactureRepository;
-use App\Repository\FluxTresorerieRepository;
 use App\Repository\ProfessionnelRepository;
-use App\Repository\RendezVousRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -50,13 +43,7 @@ final readonly class DemoDataSeeder
         private EntityManagerInterface $em,
         private EntrepriseRepository $entreprises,
         private ProfessionnelRepository $professionnels,
-        private EcheanceRepository $echeances,
-        private FactureRepository $factures,
-        private DocumentRepository $documents,
-        private ActionRepository $actions,
-        private FluxTresorerieRepository $flux,
-        private AlerteEncaissementRepository $alertes,
-        private RendezVousRepository $rendezVous,
+        private EffacementDonneesEntreprise $effacement,
     ) {
     }
 
@@ -95,15 +82,8 @@ final readonly class DemoDataSeeder
 
     private function purger(Entreprise $entreprise): void
     {
-        // Les rendez-vous d'abord (ils référencent le catalogue de professionnels).
-        // Chaque suppression vit dans le repository de son entité (§14.1).
-        $this->rendezVous->deleteForEntreprise($entreprise);
-        $this->echeances->deleteForEntreprise($entreprise);
-        $this->factures->deleteForEntreprise($entreprise);
-        $this->documents->deleteForEntreprise($entreprise);
-        $this->actions->deleteForEntreprise($entreprise);
-        $this->flux->deleteForEntreprise($entreprise);
-        $this->alertes->deleteForEntreprise($entreprise);
+        // Même définition du « périmètre entreprise » que la suppression de compte RGPD.
+        $this->effacement->effacer($entreprise);
     }
 
     private function semerEcheances(Entreprise $entreprise): void

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compte supprimé — RAF360{% endblock %}
+
+{% block body %}
+    <main id="contenu">
+        <h1>Votre compte a été supprimé</h1>
+        <p role="status">La suppression est effective : vos données ont été effacées de nos
+            bases et votre session est fermée.</p>
+        <p>Les journaux techniques conservent seulement la trace de l'opération (date et
+            identifiant interne), sans vos informations personnelles.</p>
+        <p><a href="{{ path('accueil') }}">Retour à l'accueil</a></p>
+    </main>
+{% endblock %}

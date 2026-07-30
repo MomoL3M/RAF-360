@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Trait\CycleDeVieCompte;
 use App\Repository\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('email', message: 'Un compte existe déjà avec cette adresse e-mail.')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface, TotpTwoFactorInterface
 {
+    use CycleDeVieCompte;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -57,6 +60,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface, 
     /** Secret TOTP (base32) une fois la double authentification activée ; null sinon. */
     #[ORM\Column(nullable: true)]
     private ?string $totpSecret = null;
+
+    public function __construct()
+    {
+        $this->creeLe = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

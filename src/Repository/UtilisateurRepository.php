@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\Entreprise;
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,5 +40,35 @@ final class UtilisateurRepository extends ServiceEntityRepository implements Pas
     public function findParEmail(string $email): ?Utilisateur
     {
         return $this->findOneBy(['email' => $email]);
+    }
+
+    /**
+     * Nombre de comptes rattachés à une entreprise. Sert à décider si la suppression
+     * d'un compte doit emporter les données de l'entreprise ou les laisser à ses collègues.
+     */
+    public function compterPourEntreprise(Entreprise $entreprise): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.entreprise = :ent')
+            ->setParameter('ent', $entreprise)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Comptes dont la dernière activité (connexion, à défaut création) est antérieure à
+     * la limite et qui ne sont pas déjà anonymisés — support de la purge (§17.1).
+     *
+     * @return Utilisateur[]
+     */
+    public function findInactifsAvant(\DateTimeImmutable $limite): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.anonymiseLe IS NULL')
+            ->andWhere('COALESCE(u.derniereConnexion, u.creeLe) < :limite')
+            ->setParameter('limite', $limite)
+            ->getQuery()
+            ->getResult();
     }
 }

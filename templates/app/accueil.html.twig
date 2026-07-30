@@ -1,12 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Espace RAF360{% endblock %}
+{% block title %}Mon compte — RAF360{% endblock %}
 
 {% block body %}
-    <main>
-        <h1>Espace connecté</h1>
-        <p>Bonjour {{ app.user.prenom }} — votre espace applicatif sera construit lors d'un prochain lot
-           (reproduction fidèle de la baseline gelée).</p>
-        <p><a href="{{ path('deconnexion') }}">Se déconnecter</a></p>
+    <main id="contenu">
+        <h1>Bonjour {{ app.user.prenom }}</h1>
+
+        <h2>Pilotage</h2>
+        <ul>
+            <li><a href="{{ path('app_dashboard') }}">Tableau de bord</a></li>
+            <li><a href="{{ path('app_treasury') }}">Trésorerie</a></li>
+            <li><a href="{{ path('app_calendar') }}">Échéances</a></li>
+            <li><a href="{{ path('app_factures') }}">Factures</a></li>
+            <li><a href="{{ path('app_documents') }}">Documents</a></li>
+            <li><a href="{{ path('app_actions') }}">Actions</a></li>
+        </ul>
+
+        <h2>Mon compte</h2>
+        <ul>
+            <li><a href="{{ path('securite_compte') }}">Sécurité et double authentification</a></li>
+            <li><a href="{{ path('donnees_compte') }}">Mes données : télécharger ou supprimer mon compte</a></li>
+        </ul>
+
+        <p style="margin-top:24px"><a href="{{ path('deconnexion') }}">Se déconnecter</a></p>
     </main>
 {% endblock %}

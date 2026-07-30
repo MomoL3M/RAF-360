@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes données — RAF360{% endblock %}
+
+{% block body %}
+    <main id="contenu">
+        <h1>Mes données</h1>
+
+        {% for message in app.flashes('error') %}
+            <p role="alert">{{ message }}</p>
+        {% endfor %}
+
+        <h2>Obtenir une copie de mes données</h2>
+        <p>Vous pouvez télécharger l'ensemble des informations rattachées à votre compte :
+            votre profil, votre entreprise et vos données de gestion (factures, échéances,
+            documents, trésorerie). Le fichier est au format JSON, lisible et réutilisable.</p>
+        <p>Le mot de passe et les codes de double authentification n'y figurent pas :
+            ce sont des éléments d'authentification, sans utilité pour vous et sensibles
+            dans un fichier téléchargé.</p>
+        <p><a href="{{ path('donnees_export') }}">Télécharger mes données (JSON)</a></p>
+
+        <h2>Supprimer mon compte</h2>
+        <p>La suppression est <strong>définitive</strong> : il n'y a pas de corbeille et
+            aucune restauration possible.</p>
+
+        {% if emporteEntreprise %}
+            <p role="note">Vous êtes le <strong>dernier compte</strong> de votre entreprise :
+                la suppression effacera aussi <strong>toutes les données de l'entreprise</strong>
+                (factures, échéances, documents, trésorerie, rendez-vous).
+                Pensez à télécharger vos données avant de continuer.</p>
+        {% else %}
+            <p role="note">D'autres comptes utilisent votre entreprise : ses données de gestion
+                sont conservées pour vos collègues. Seul votre compte personnel est supprimé.</p>
+        {% endif %}
+
+        <form method="post" action="{{ path('compte_supprimer') }}">
+            <p>
+                <label for="mot_de_passe">Votre mot de passe</label><br>
+                <input id="mot_de_passe" type="password" name="mot_de_passe"
+                       autocomplete="current-password" required>
+            </p>
+            <p>
+                <label for="confirmation">Saisissez <code>SUPPRIMER</code> pour confirmer</label><br>
+                <input id="confirmation" type="text" name="confirmation" required>
+            </p>
+            <input type="hidden" name="_token" value="{{ csrf_token('compte_supprimer') }}">
+            <button type="submit">Supprimer définitivement mon compte</button>
+        </form>
+
+        <p style="margin-top:24px"><a href="{{ path('app_dashboard') }}">Retour au tableau de bord</a></p>
+    </main>
+{% endblock %}

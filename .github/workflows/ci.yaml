@@ -12,6 +12,27 @@ jobs:
   qualite:
     name: Qualité & tests
     runs-on: ubuntu-latest
+
+    # Les tests fonctionnels (droits RGPD, parcours) écrivent en base : sans PostgreSQL
+    # ici, la CI ne pourrait vérifier que du code sans effet (§24).
+    services:
+      database:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: "postgresql://app:app@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -19,6 +40,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: pdo_pgsql, intl, gd, sodium
           tools: composer:v2
           coverage: none
 
@@ -41,7 +63,18 @@ jobs:
           PHP_CS_FIXER_IGNORE_ENV: 1
 
       - name: Analyse statique (PHPStan)
-        run: vendor/bin/phpstan analyse --no-progress
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      - name: Contrôle des gabarits Twig
+        run: php bin/console lint:twig templates --env=test
+
+      - name: Préparer la base de test
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+      - name: Vérifier que le schéma correspond au mapping
+        run: php bin/console doctrine:schema:validate --env=test
 
       - name: Tests (PHPUnit)
         run: vendor/bin/phpunit

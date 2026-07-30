@@ -39,7 +39,7 @@ final class LeadController extends AbstractController
 
             $errors = $this->guardAndValidate($request, $validator, $leadFormLimiter, $data);
             if ([] === $errors) {
-                $logger->info('Lead contact reçu', ['email' => $data->email, 'societe' => $data->societe]);
+                $logger->info('Lead contact reçu', ['canal' => 'contact', 'empreinte' => self::empreinte($data->email)]);
                 $leadNotifier->handleContact($data);
 
                 return $this->acknowledge('contact');
@@ -66,7 +66,7 @@ final class LeadController extends AbstractController
 
             $errors = $this->guardAndValidate($request, $validator, $leadFormLimiter, $data);
             if ([] === $errors) {
-                $logger->info('Diagnostic demandé', ['siren' => $data->siren]);
+                $logger->info('Diagnostic demandé', ['canal' => 'diagnostic', 'empreinte' => self::empreinte($data->email)]);
                 $leadNotifier->handleDiagnostic($data);
 
                 return $this->acknowledge('diagnostic');
@@ -112,5 +112,15 @@ final class LeadController extends AbstractController
     private function isSpam(Request $request): bool
     {
         return '' !== trim((string) $request->request->get('website', ''));
+    }
+
+    /**
+     * Empreinte courte et non réversible d'une adresse e-mail : elle permet au support de
+     * relier une demande à un envoi sans jamais écrire la donnée personnelle en clair
+     * dans les journaux (§2.6, §17.1).
+     */
+    private static function empreinte(string $email): string
+    {
+        return substr(hash('sha256', mb_strtolower(trim($email))), 0, 10);
     }
 }

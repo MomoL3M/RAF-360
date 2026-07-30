@@ -40,8 +40,15 @@
 
             <h2>Durées de conservation</h2>
             <p>
-                Les données des prospects sont conservées le temps nécessaire au traitement de la demande, puis archivées
-                ou supprimées selon les durées légales applicables. <em>(Durées précises à confirmer par l'éditeur.)</em>
+                Les demandes envoyées via les formulaires de contact et de diagnostic ne sont pas stockées dans le site :
+                elles sont transmises par e-mail à l'éditeur et conservées dans sa messagerie.
+                <em>(Durée de conservation de ces échanges à confirmer par l'éditeur.)</em>
+            </p>
+            <p>
+                Les comptes clients sans connexion depuis <strong>36 mois</strong> sont automatiquement anonymisés :
+                les informations qui permettent d'identifier la personne sont remplacées par des valeurs neutres et les
+                moyens de connexion sont neutralisés. Cette purge est exécutée par une tâche planifiée, pas seulement
+                annoncée ici.
             </p>
 
             <h2>Destinataires et sous-traitants</h2>
@@ -53,9 +60,16 @@
             <h2>Vos droits</h2>
             <p>
                 Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, d'opposition, de
-                limitation et de portabilité de vos données. Vous pouvez les exercer via notre
-                <a href="{{ path('contact') }}">page de contact</a>. Vous pouvez également introduire une réclamation
-                auprès de la CNIL (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).
+                limitation et de portabilité de vos données.
+            </p>
+            <p>
+                Si vous avez un compte, deux de ces droits s'exercent directement, sans passer par une demande :
+                depuis la page <a href="{{ path('donnees_compte') }}">Mes données</a> de votre compte, vous pouvez
+                <strong>télécharger la totalité de vos données</strong> au format JSON (accès et portabilité) et
+                <strong>supprimer définitivement votre compte</strong> (effacement).
+                Pour les autres droits, écrivez-nous via la <a href="{{ path('contact') }}">page de contact</a>.
+                Vous pouvez également introduire une réclamation auprès de la CNIL
+                (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).
             </p>
 
             <h2>Cookies</h2>
