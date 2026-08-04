@@ -34,26 +34,52 @@ Ce standard s'applique à un projet EXISTANT démarré sans lui : l'écart entre
 
 > Liste ici chaque écart entre ce projet et le standard. Vide = le projet suit le standard à la lettre. À chaque brique installée, supprime la ligne correspondante.
 
-- **Phase en cours : R5 (recette & bascule). R4-B TERMINÉE ; les 4 bloquants techniques de la recette sont SOLDÉS.** Recette §25 avec preuve par item → **`docs/recette-r5.md`**. ⛔ Mise en ligne toujours **BLOQUÉE**, mais il ne reste que **5 bloquants, tous côté chef de projet** : témoignages/chiffres réels, email + directeur de publication + hébergeur, CGV/CGU, domaine/certificat, arbitrage CG-01. **Non vérifiables sans préproduction** : Lighthouse/CWV, accessibilité clavier + lecteur d'écran, recette visuelle 4 largeurs. **✅ Gate R0 fermé** : dépôt privé `github.com/MomoL3M/RAF-360` (`main` = Symfony, `baseline-nextjs-gelee` + tag `avant-mise-en-conformite` = existant gelé) → la CI tourne enfin.
-- **✅ Fait — RGPD exerçable (§17.1)** : page « Mes données » (export JSON complet sans mot de passe ni secret TOTP + suppression définitive avec mot de passe et confirmation explicite, transactionnelle) ; périmètre entreprise défini **une seule fois** (`EffacementDonneesEntreprise`, partagé avec le peuplement) ; durées **appliquées** par `app:purger-donnees` (anonymisation à 36 mois d'inactivité, admins exclus, `--simulation`) ; registre `docs/traitements-donnees.md` ; arbitrages dans `docs/decisions.md`. Correction au passage : l'e-mail des prospects était **journalisé en clair** → empreinte SHA-256 non réversible.
-- **✅ Fait — exploitation (§15/§22/§23.2)** : `bin/sauvegarde-base.sh` (pg_dump chiffré AES-256, auto-vérifié) et `bin/restaurer-base.sh` (refus sans `--confirmer`, archive validée avant de toucher la base) ; **cycle sauvegarde → restauration réellement exécuté et consigné** (comptages identiques) ; `docs/exploitation.md` : RPO 24 h / RTO 4 h, PRA, rollback, SPOF, modes dégradés, règles d'archivage table par table. `bin/test-de-fumee.sh` (12 vérifications contenu + code HTTP) branché en CI. Dependabot (Composer + actions) et `importmap:audit`.
-- **✅ Fait — plan de mesure (§20)** : `docs/plan-mesure.md` (entonnoir de la conversion n°1, convention de nommage, micro-conversions) ; contrôleur Stimulus **unique** `tracking` ; conversions annoncées par le **serveur** (flash) donc jamais sur un simple clic ; segmentation des moteurs de réponse IA (§9.4) ; aucune donnée personnelle (chemin sans query string) ; rien n'est émis sans consentement **ni** sans `ANALYTICS_ENDPOINT` → **le site ne mesure rien aujourd'hui**. `TODO-PM` : choisir un outil sans cookie hébergé en UE (et ajouter son origine en `connect-src` de la CSP).
-- **✅ Fait — CI avec base de données** : PostgreSQL ajouté au workflow ; sans base, aucun test fonctionnel n'était possible. Couverture 20 → **27 tests** (dont 4 sur les droits RGPD). Étapes : `composer validate`, CS-Fixer, PHPStan (1 G de mémoire), `lint:twig`, migrations + `schema:validate`, PHPUnit, test de fumée, `composer audit`, `importmap:audit`.
-- **Projet démarré AVANT le standard — mise en conformité selon `docs/audit-conformite.md` (protocole 0-R).** Faits : R0/R1/R2/R3 ✅, R4-B socle + schéma + auth (Argon2id) + site public marketing complet + 9 écrans `/app` premium + onboarding 3 étapes ✅. `TODO-PM` bloquants avant mise en ligne : témoignages/chiffres réels, email de contact, hébergeur UE, validation juridique des pages légales. _(mettre à jour au fil de l'avancement)_
-- **Existant identifié (R0/R2)** : Next.js 16 / React 19 / TypeScript, données 100 % fictives, aucune auth, aucune BDD connectée → chemin B. Le dépôt Next.js est **GELÉ** (baseline/spécification). Nouveau dépôt Symfony : **`../raf360-symfony`**.
-- **ISO-GRAPHISME acté** : le site conforme reproduit fidèlement le graphisme, la mise en page et les éléments dynamiques du site existant (baseline visuelle R0 = référence contractuelle de recette). Les conflits éventuels avec le standard sont arbitrés point par point via le registre 0-R-V — aucun changement visuel silencieux.
-- **Base de données : type déterminé en R2, stratégie selon le cas** — PostgreSQL → CONSERVÉE telle quelle (Doctrine mappée sur le schéma existant, zéro migration de données) ; MySQL/SQLite/fichiers/BaaS → reprise des données planifiée : import initial contrôlé + gel court + synchronisation delta à la bascule (JAMAIS une copie unique faite plusieurs jours avant).
-- **Exposition actuelle : AUCUNE** (pas de domaine public, pas de trafic, pas de campagne — cf. `docs/etat-des-lieux.md`). → bascule libre, aucune 301 à préserver. _(à re-confirmer par le chef de projet)_
-- _(après l'audit R2, lister ici les écarts majeurs restants, puis effacer chaque ligne au fur et à mesure des lots)_
-- **Installé** : Twig, Symfony UX (Stimulus/Turbo), AssetMapper, Doctrine ORM, Validator, SecurityBundle (Argon2id), RateLimiter, CI (GitHub Actions), Docker (FrankenPHP + PostgreSQL 16 ; **extension GD WebP/AVIF ajoutée au Dockerfile**), **NelmioSecurityBundle (CSP + clickjacking DENY + nosniff + Referrer-Policy ; HSTS en prod)**, `robots.txt` (+ robots IA autorisés), `llms.txt`, `sitemap.xml`, JSON-LD `Organization`, canonical par page, endpoint `/health`, bandeau de consentement cookies, **LiipImagineBundle (jeux WebP `content_*`)**, **Sentry (sentry/sentry-symfony, PII off, prod via `SENTRY_DSN`)**, **emails transactionnels (service `LeadNotifier` + gabarits + Messenger async ; Mailpit en dev)**, **collecteur d'erreurs front (`/log/client-error` + beacon)**, **accessibilité WCAG 2.2 du site public (lien d'évitement, focus clavier, contraste `--gold-ink`)**. **Reste à installer** : test de charge, PWA (si retenu).
-- **`TODO-PM` observabilité/accessibilité** : `SENTRY_DSN` (projet Sentry UE) ; expéditeur/destinataire d'email réels + **SPF/DKIM/DMARC** (DNS, dépend du domaine) ; **recette a11y humaine** (clavier + lecteur d'écran + axe/Lighthouse — bloquée en local par le certificat auto-signé) ; a11y de `/app` + onboarding (templates autonomes, non couverts par la passe site public) ; déclaration d'accessibilité si le statut de l'organisation l'exige. Arbitrage contraste ambre : `docs/conflits-graphisme.md` (CG-01, à confirmer par le PM).
-- **Choix §8.2 (assets de marque statiques)** : `og:image` (`raf360-og.jpg`, carte 1200×630, 23 Ko) et logo JSON-LD (`raf360-logo.png`, réduit 850→198 Ko) sont des fichiers statiques optimisés, PAS des sorties LiipImagine — la conversion de format LiipImagine garde l'extension d'URL d'origine (MIME incohérent pour scrapers) et le PNG GD compresse mal. LiipImagine sert les images de CONTENU responsives (WebP).
-- **Dérogation §16.2 (CSP `'unsafe-inline'`)** : `script-src`/`style-src` autorisent l'inline — requis par l'importmap AssetMapper, le petit script `.js` de `base.html.twig`, les nombreux styles inline et les écrans `/app` autonomes. XSS déjà couvert par l'auto-échappement Twig + aucun HTML utilisateur. Cible : nonces + externalisation, puis retrait d'`unsafe-inline`.
-- **Écart §9.1 (sitemap sans bundle)** : `sitemap.xml` généré par un contrôleur natif depuis le routeur (jeu d'URL restreint et statique) plutôt que `presta/sitemap-bundle` — §2.5 (pas de dépendance sans besoin clair). À rebasculer sur le bundle quand le blog aura de nombreux articles.
-- **✅ Résolu — inscription sécurisée (§16.1)** : la dérogation « onboarding sans mot de passe » est levée. `/inscription` crée un compte (e-mail + mot de passe **haché Argon2id**, ≥ 12 car., CSRF, rate limit) puis connexion → `/onboarding` (désormais **protégé** `access_control ^/onboarding`, configure l'entreprise du compte). Vérification d'e-mail (double opt-in) : recommandée, non encore faite.
-- **✅ Fait — `/app` sur vraies données (§4.3/§16.1)** : les 8 écrans lisent la base par **entreprise** (relation `entreprise` sur Échéance/Facture/Document/Action/FluxTrésorerie/AlerteEncaissement/RendezVous ; `Professionnel` = catalogue partagé volontairement non cloisonné). Plus aucun tableau de démonstration codé en dur dans les gabarits. Mise en forme dans des services de vue (`AppViewFactory`, `PieceViewFactory`, `TresorerieViewFactory`) ; peuplement via `DemoDataSeeder` + commande `app:demo-data`. **Source réelle des données (connecteur banque/compta ou saisie/back-office) = arbitrage chef de projet non tranché** (§2.12) : aujourd'hui un jeu de démonstration alimente la base.
-- **Dérogation §2.3 (gabarits `/app` autonomes)** : `templates/app/dashboard.html.twig` (~420 l.) et `treasury.html.twig` (~330 l.), ainsi que `templates/marketing/accueil.html.twig` (~300 l.), dépassent le plafond de 300 lignes — ce sont des **documents autonomes** (CSS et JS inline) volontairement isolés du design system marketing pour éviter tout conflit de tokens. _(dérogation assumée ; découpage en composants Twig possible une fois le design stabilisé)_
-- **✅ Fait — MFA administration (§16.1)** : double authentification **TOTP** (`scheb/2fa-bundle` + `scheb/2fa-totp`). `Utilisateur` implémente `TwoFactorInterface` (+ `totpSecret`). Activation `/mon-compte/securite` (QR via `endroid/qr-code`). **Obligatoire pour les admins** : `Enforce2faSubscriber` redirige tout admin sans 2FA vers l'activation. Commande `app:create-admin`. Défi 2FA à la connexion via le firewall (`two_factor`).
+> **Ce bloc ne liste que les ÉCARTS ACTUELS.** L'historique des lots livrés est dans
+> `docs/journal-lots.md` (il n'a pas sa place ici : R6 exige que ce bloc se vide).
+> État d'avancement du standard : `docs/etat-standard.md`.
+
+**Phase : R5 terminée côté technique · R6 engagée (fermeture partielle).** R0→R4-B ✅.
+Recette §25 avec preuve par item → `docs/recette-r5.md`. ⛔ **Mise en ligne BLOQUÉE par
+5 points, tous côté chef de projet** (voir plus bas). La **bascule (R5 étape 2) et la
+clôture complète de R6 sont suspendues** jusqu'à ces 5 points.
+
+### Écarts et dérogations assumés
+
+- **Dérogation §16.2 (CSP `'unsafe-inline'`)** : `script-src`/`style-src` autorisent l'inline — requis par l'importmap AssetMapper, le script `.js` de `base.html.twig`, les styles inline et les écrans `/app` autonomes. XSS déjà couvert par l'auto-échappement Twig + aucun HTML utilisateur. Cible : nonces + externalisation, puis retrait d'`unsafe-inline`.
+- **Dérogation §2.3 (gabarits autonomes)** : `templates/app/dashboard.html.twig` (~420 l.), `treasury.html.twig` (~330 l.) et `templates/marketing/accueil.html.twig` (~300 l.) dépassent le plafond de 300 lignes — documents autonomes (CSS + JS inline) volontairement isolés du design system pour éviter tout conflit de tokens. Découpage possible une fois le design stabilisé.
+- **Écart §9.1 (sitemap sans bundle)** : `sitemap.xml` généré par un contrôleur natif (jeu d'URL restreint et statique) plutôt que `presta/sitemap-bundle` — §2.5. À rebasculer sur le bundle quand le blog aura de nombreux articles.
+- **Choix §8.2 (assets de marque statiques)** : `og:image` (23 Ko) et logo JSON-LD (198 Ko) sont des fichiers statiques optimisés, PAS des sorties LiipImagine — la conversion de format LiipImagine garde l'extension d'URL d'origine (MIME incohérent pour les scrapers) et le PNG GD compresse mal. LiipImagine sert les images de CONTENU (WebP).
+- **§22 sessions en fichiers** : interdit plusieurs instances derrière un répartiteur. Acceptable en mono-instance ; stockage partagé requis avant toute mise à l'échelle (`docs/decisions.md`).
+- **§2.4 `main` non protégée côté GitHub** : la règle « jamais de push direct sur `main` » est tenue par discipline (branche + fusion), pas encore par la plateforme. À activer par le chef de projet (*Settings → Branches*).
+
+### Non fait, assumé
+
+- **Vérification d'e-mail (double opt-in)** — recommandée par §16.1, non bloquante.
+- **Test de charge** (§22) et **PWA** (§18.6, si retenue) — non engagés.
+- **Back-office de contenus** (§19) — non engagé : aucun contributeur non-développeur à ce jour.
+- **Source réelle des données `/app`** (§2.12) : connecteur banque/compta ou saisie ? **Arbitrage chef de projet non tranché** — aujourd'hui un jeu de démonstration alimente la base, signalé comme tel dans l'interface.
+- **Accessibilité de `/app` et de l'onboarding** : la passe WCAG 2.2 a couvert le site public ; ces gabarits autonomes n'ont pas été audités.
+
+### Contexte structurel (à conserver)
+
+- **Chemin B acté (R3)** : l'existant Next.js 16 / React 19 (données 100 % fictives, aucune auth, aucune base) est **GELÉ** et sert de baseline/spécification. Dépôt distant privé unique : `github.com/MomoL3M/RAF-360` — `main` = Symfony, branche `baseline-nextjs-gelee` + tag `avant-mise-en-conformite` = existant archivé.
+- **ISO-GRAPHISME** : le site reproduit fidèlement graphisme, mise en page et éléments dynamiques de la baseline R0. Aucun changement visuel silencieux — tout conflit passe par `docs/conflits-graphisme.md` (registre 0-R-V).
+- **Exposition actuelle : AUCUNE** (pas de domaine, pas de trafic, pas de campagne) → bascule libre, aucune redirection 301 à préserver. **Aucune donnée à migrer** : la baseline n'avait pas de base de données.
+
+### ⛔ Bloquants de mise en ligne — chef de projet
+
+1. **Témoignages et chiffres clients réels** — interdiction d'inventer (§2.10).
+2. **Email de contact, directeur de la publication, hébergeur (UE)** — mentions légales incomplètes (§12.1).
+3. **CGV/CGU** — le site affiche des prix (§12.1, §17.2).
+4. **Domaine + hébergement + certificat** — conditionne HTTPS réel, HSTS, Search Console, surveillance uptime, SPF/DKIM/DMARC, `SENTRY_DSN`, choix de l'outil de mesure, cron de sauvegarde et de purge.
+5. **Arbitrage CG-01** (contraste ambre) pour solder le registre 0-R-V.
+
+### Non vérifiable sans préproduction (ni réussi, ni échoué)
+
+Lighthouse / Core Web Vitals par gabarit · accessibilité clavier + lecteur d'écran ·
+recette visuelle 4 largeurs contre la baseline R0 · `docker compose up` sur machine
+vierge · tests d'accès inter-entreprises. Cause : le navigateur intégré ne franchit pas le
+certificat auto-signé de `https://localhost`.
 
 ---
 
